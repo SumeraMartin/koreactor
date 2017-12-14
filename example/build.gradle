@@ -1,0 +1,86 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
+android {
+    compileSdkVersion 26
+    buildToolsVersion '26.0.2'
+
+    defaultConfig {
+        applicationId "com.sumera.koreactor"
+        minSdkVersion 16
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+
+        vectorDrawables.useSupportLibrary = true
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    androidExtensions {
+        experimental = true
+    }
+}
+
+dependencies {
+    // RxJava extension
+    implementation "com.github.akarnokd:rxjava2-extensions:$rootProject.ext.RX_JAVA_EXTENSIONS"
+
+
+    // MVI
+//    implementation project(':lib')
+
+    // SUPPORT
+    implementation "com.android.support:design:$rootProject.ext.SUPPORT_LIBRARY_VERSION"
+    implementation "com.android.support:appcompat-v7:$rootProject.ext.SUPPORT_LIBRARY_VERSION"
+    implementation "com.android.support:recyclerview-v7:$rootProject.ext.SUPPORT_LIBRARY_VERSION"
+    implementation "com.android.support:palette-v7:$rootProject.ext.SUPPORT_LIBRARY_VERSION"
+    implementation "android.arch.lifecycle:extensions:$rootProject.ext.ARCH_COMPONENTS_VERSION"
+
+    // UI
+    implementation "me.zhanghai.android.materialprogressbar:library:$rootProject.ext.PROGRESS_BAR_LIBRARY"
+
+    // Persistence
+    implementation "com.orhanobut:hawk:$rootProject.ext.HAWK_VERSION"
+
+    // RxJava
+    implementation "io.reactivex.rxjava2:rxjava:$rootProject.ext.RX_JAVA"
+    implementation "io.reactivex.rxjava2:rxkotlin:$rootProject.ext.RX_KOTLIN"
+    implementation "io.reactivex.rxjava2:rxandroid:$rootProject.ext.RX_ANDROID"
+
+    // RxBinding
+    implementation "com.jakewharton.rxbinding2:rxbinding-kotlin:$rootProject.ext.RX_BINDING"
+    implementation "com.jakewharton.rxbinding2:rxbinding-support-v4-kotlin:$RX_BINDING"
+    implementation "com.jakewharton.rxbinding2:rxbinding-appcompat-v7-kotlin:$rootProject.ext.RX_BINDING"
+    implementation "com.jakewharton.rxbinding2:rxbinding-recyclerview-v7-kotlin:$rootProject.ext.RX_BINDING"
+
+    // Kotlin
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+
+    // Networking
+    implementation "com.squareup.retrofit2:retrofit:$rootProject.ext.RETROFIT"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$rootProject.ext.RETROFIT"
+    implementation "com.squareup.retrofit2:converter-moshi:$rootProject.ext.RETROFIT_MOSHI_CONVERTER"
+    implementation "com.squareup.moshi:moshi-kotlin:$rootProject.ext.MOSHI"
+    implementation "com.squareup.okhttp3:okhttp:$rootProject.ext.OKHTTP"
+    implementation "com.squareup.okhttp3:logging-interceptor:$rootProject.ext.OKHTTP"
+
+    // Dependency injection
+    implementation "com.google.dagger:dagger:$rootProject.ext.DAGGER_VERSION"
+    implementation "com.google.dagger:dagger-android-support:$rootProject.ext.DAGGER_VERSION"
+    kapt "com.google.dagger:dagger-compiler:$rootProject.ext.DAGGER_VERSION"
+    kapt "com.google.dagger:dagger-android-processor:$rootProject.ext.DAGGER_VERSION"
+
+    // Image loading
+    implementation "com.github.bumptech.glide:glide:$rootProject.ext.GLIDE"
+    kapt "com.github.bumptech.glide:compiler:$rootProject.ext.GLIDE"
+
+    // Logging
+    implementation "com.jakewharton.timber:timber:$rootProject.ext.TIMBER"
+    testCompile 'org.testng:testng:6.9.6'
+}

@@ -1,0 +1,16 @@
+<resources>
+	<string name="app_name">KoReactor</string>
+	<string name="action_settings">Settings</string>
+
+	<!-- PlaceholderLayout -->
+	<string name="placeholder_loading">Loading…</string>
+	<string name="placeholder_error_title">Error</string>
+	<string name="placeholder_error_text">Something has gone wrong.</string>
+	<string name="placeholder_empty_title">Empty</string>
+	<string name="placeholder_empty_text">No data available</string>
+	<string name="placeholder_try_again">Try again</string>
+
+	<!-- Errors -->
+	<string name="error_no_network">No internet connection</string>
+	<string name="error_generic">Something has gone wrong</string>
+</resources>
