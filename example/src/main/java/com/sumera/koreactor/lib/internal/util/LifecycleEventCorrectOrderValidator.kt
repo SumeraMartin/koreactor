@@ -4,20 +4,20 @@ import com.sumera.koreactor.lib.reactor.lifecycle.*
 
 object LifecycleEventCorrectOrderValidator {
 
-	fun isValidOrder(previous: LifecycleEvent?, current: LifecycleEvent): Boolean {
+	fun isValidOrder(previous: LifecycleState?, current: LifecycleState): Boolean {
 		if (previous == null) {
-			return current is AttachEvent
+			return current is AttachState
 		}
 
 		return when(previous) {
-			is AttachEvent -> current is CreateEvent
-			is CreateEvent -> current is StartEvent
-			is StartEvent -> current is ResumeEvent
-			is ResumeEvent -> current is PauseEvent
-			is PauseEvent -> current is StopEvent || current is ResumeEvent
-			is StopEvent -> current is DestroyEvent || current is StartEvent
-			is DestroyEvent -> current is CreateEvent || current is DetachEvent
-			is DetachEvent -> throw IllegalStateException("No lifecycle events are allowed after DetachEvent: " + current)
+			is AttachState -> current is CreateState
+			is CreateState -> current is StartState
+			is StartState -> current is ResumeState
+			is ResumeState -> current is PauseState
+			is PauseState -> current is StopState || current is ResumeState
+			is StopState -> current is DestroyState || current is StartState
+			is DestroyState -> current is CreateState || current is DetachState
+			is DetachState -> throw IllegalStateException("No lifecycle events are allowed after DetachEvent: " + current)
 		}
 	}
 }

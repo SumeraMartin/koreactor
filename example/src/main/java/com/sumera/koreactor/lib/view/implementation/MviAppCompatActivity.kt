@@ -8,23 +8,24 @@ import android.support.v7.app.AppCompatActivity
 import com.sumera.koreactor.lib.reactor.MviReactor
 import com.sumera.koreactor.lib.reactor.data.MviAction
 import com.sumera.koreactor.lib.reactor.data.MviState
-import com.sumera.koreactor.lib.view.MviBindable
+import com.sumera.koreactor.lib.view.MviBindableView
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 
-abstract class MviAppCompatActivity<STATE : MviState> :
-		AppCompatActivity(), MviBindable<STATE> {
+abstract class MviAppCompatActivity<STATE : MviState> : AppCompatActivity(), MviBindableView<STATE> {
 
 	abstract protected val reactor: MviReactor<STATE>
 
-	private val disposables = CompositeDisposable()
+	private val stateDisposables = CompositeDisposable()
+
+	private val eventDisposables = CompositeDisposable()
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 
-		reactor.bindWith(this)
-		reactor.onCreate(savedInstanceState)
+		reactor.setBindableView(this)
+		reactor.onCreate(savedInstanceState == null)
 	}
 
 	override fun onStart() {
@@ -54,9 +55,15 @@ abstract class MviAppCompatActivity<STATE : MviState> :
 	override fun onDestroy() {
 		reactor.onDestroy(this)
 
-		disposables.clear()
-
 		super.onDestroy()
+	}
+
+	override fun unbindFromState() {
+		stateDisposables.clear()
+	}
+
+	override fun unbindFromEvents() {
+		eventDisposables.clear()
 	}
 
 	protected fun <VIEW_MODEL : ViewModel> getReactor(factory: ViewModelProvider.Factory, viewModel: Class<VIEW_MODEL>): VIEW_MODEL {
@@ -64,10 +71,14 @@ abstract class MviAppCompatActivity<STATE : MviState> :
 	}
 
 	protected fun Observable<out MviAction<STATE>>.bindToReactor() {
-		disposables += subscribe { value -> reactor.propagateAction(value) }
+		reactor.bindAction(this)
 	}
 
-	protected fun <VALUE> Observable<VALUE>.observe(action: (VALUE) -> (Unit)) {
-		disposables += subscribe { value -> action(value) }
+	protected fun <VALUE> Observable<VALUE>.observeState(action: (VALUE) -> (Unit)) {
+		stateDisposables += subscribe { value -> action(value) }
+	}
+
+	protected fun <VALUE> Observable<VALUE>.observeEvent(action: (VALUE) -> (Unit)) {
+		eventDisposables += subscribe { value -> action(value) }
 	}
 }

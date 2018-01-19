@@ -2,9 +2,7 @@ package com.sumera.koreactor.lib.reactor
 
 import android.app.Activity
 import android.arch.lifecycle.ViewModel
-import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.util.Log
 import com.sumera.koreactor.lib.behaviour.MviBehaviour
 import com.sumera.koreactor.lib.internal.extension.cacheEventsUntilViewIsCreated
 import com.sumera.koreactor.lib.internal.extension.cacheEventsUntilViewIsStarted
@@ -18,8 +16,10 @@ import com.sumera.koreactor.lib.reactor.data.either.EitherEventOrReducer
 import com.sumera.koreactor.lib.reactor.data.either.fold
 import com.sumera.koreactor.lib.reactor.data.event.MviEvent
 import com.sumera.koreactor.lib.reactor.lifecycle.*
-import com.sumera.koreactor.lib.view.MviBindable
+import com.sumera.koreactor.lib.util.extension.ofLifecycleType
+import com.sumera.koreactor.lib.view.MviBindableView
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
@@ -28,23 +28,44 @@ import io.reactivex.subjects.PublishSubject
 
 abstract class MviReactor<STATE : MviState> : ViewModel() {
 
-	protected val lifecycleObservable: Observable<LifecycleEvent>
+	protected val lifecycleObservable: Observable<LifecycleState>
 		get() = lifecycleSubject
 
-	protected val lifecycleObservableOnce: Observable<LifecycleEvent>
-		get() = lifecycleSubject.firstOrError().toObservable()
+	protected val attachLifecycleObservable: Observable<AttachState>
+		get() = lifecycleObservable.ofLifecycleType()
+
+	protected val createLifecycleObservable: Observable<CreateState>
+		get() = lifecycleObservable.ofLifecycleType()
+
+	protected val startLifecycleObservable: Observable<StartState>
+		get() = lifecycleObservable.ofLifecycleType()
+
+	protected val resumeLifecycleObservable: Observable<ResumeState>
+		get() = lifecycleObservable.ofLifecycleType()
+
+	protected val paseLifecycleObservable: Observable<PauseState>
+		get() = lifecycleObservable.ofLifecycleType()
+
+	protected val stopLifecycleObservable: Observable<StopState>
+		get() = lifecycleObservable.ofLifecycleType()
+
+	protected val destroyLifecycleObservable: Observable<DestroyState>
+		get() = lifecycleObservable.ofLifecycleType()
+
+	protected val detachLifecycleObservable: Observable<DetachState>
+		get() = lifecycleObservable.ofLifecycleType()
 
 	protected val stateObservable: Observable<STATE>
 		get() = stateSubject
 
-	protected val stateObservableOnce: Observable<STATE>
-		get() = stateSubject.firstOrError().toObservable()
+	protected val stateSingle: Single<STATE>
+		get() = stateSubject.firstOrError()
 
 	protected abstract fun createInitialState() : STATE
 
 	protected abstract fun bind(actions: Observable<MviAction<STATE>>)
 
-	private var bindableView: MviBindable<STATE>? = null
+	private var bindableView: MviBindableView<STATE>? = null
 
 	private val keepUntilDetachDisposables = CompositeDisposable()
 
@@ -60,45 +81,53 @@ abstract class MviReactor<STATE : MviState> : ViewModel() {
 
 	private val actionsSubject = PublishSubject.create<MviAction<STATE>>()
 
-	private val lifecycleSubject = BehaviorSubject.create<LifecycleEvent>()
+	private val lifecycleSubject = BehaviorSubject.create<LifecycleState>()
 
 	fun propagateAction(action: MviAction<STATE>) {
 		actionsSubject.onNext(action)
 	}
 
-	fun bindWith(bindableView: MviBindable<STATE>) {
+	fun bindAction(actionObservable: Observable<out MviAction<STATE>>) {
+		keepUntilDestroyDisposables += actionObservable.subscribe { value -> propagateAction(value) }
+	}
+
+	fun setBindableView(bindableView: MviBindableView<STATE>) {
 		this.bindableView = bindableView
 	}
 
-	fun onCreate(savedInstanceState: Bundle?) {
-		if (savedInstanceState == null) {
+	fun onCreate(isNewlyCreated: Boolean) {
+		if (isNewlyCreated) {
 			bindUnsafeEventsToSafeEvents()
 			bindActionsToReactor()
 
-			lifecycleEventChanged(AttachEvent)
+			stateSubject.onNext(createInitialState())
+
+			lifecycleEventChanged(AttachState)
 		}
 
 		bindSafeEventsToView()
 
-		lifecycleEventChanged(CreateEvent)
+		lifecycleEventChanged(CreateState)
 	}
 
 	fun onStart() {
 		bindStateToView()
 
-		lifecycleEventChanged(StartEvent)
+		lifecycleEventChanged(StartState)
 	}
 
 	fun onResume() {
-		lifecycleEventChanged(ResumeEvent)
+		lifecycleEventChanged(ResumeState)
 	}
 
 	fun onPause() {
-		lifecycleEventChanged(PauseEvent)
+		lifecycleEventChanged(PauseState)
 	}
 
 	fun onStop() {
-		lifecycleEventChanged(StopEvent)
+		lifecycleEventChanged(StopState)
+
+		safeBindableView.unbindFromState()
 
 		keepUntilVisibleDisposables.clear()
 	}
@@ -111,32 +140,31 @@ abstract class MviReactor<STATE : MviState> : ViewModel() {
 		onDestroy(DetachReactorHelper.shouldDetachReactor(activity))
 	}
 
-	private fun onDestroy(shouldUnbindReactor: Boolean) {
-		lifecycleEventChanged(DestroyEvent)
+	fun onDestroy(shouldUnbindReactor: Boolean) {
+		lifecycleEventChanged(DestroyState)
 
 		keepUntilDestroyDisposables.clear()
 
 		if (shouldUnbindReactor) {
-			lifecycleEventChanged(DetachEvent)
+			lifecycleEventChanged(DetachState)
+
+			safeBindableView.unbindFromEvents()
+
 			keepUntilDetachDisposables.clear()
 		}
 
-		this.bindableView 	= null
+		this.bindableView = null
 	}
 
 	private fun bindActionsToReactor() {
-		stateSubject.onNext(createInitialState())
-
 		val actions = actionsSubject.doOnNext(debugLog).publish()
 		bind(actions)
 		keepUntilDetachDisposables += actions.connect()
 	}
 
 	private fun bindStateToView() {
-		val localBindable = bindableView ?: throw IllegalStateException("initialize was not called")
-
 		val stateObservable = stateSubject.doOnNext(debugLog).publish()
-		localBindable.bindToState(stateObservable)
+		safeBindableView.bindToState(stateObservable)
 		keepUntilVisibleDisposables += stateObservable.connect()
 	}
 
@@ -159,17 +187,18 @@ abstract class MviReactor<STATE : MviState> : ViewModel() {
 	}
 
 	private fun bindSafeEventsToView() {
-		val localBindable = bindableView ?: throw IllegalStateException("initialize was not called")
-
 		val eventsObservable = safeEventsSubject
 				.cacheEventsUntilViewIsCreated(lifecycleObservable)
 				.publish()
 
-		localBindable.bindToEvent(eventsObservable)
+		safeBindableView.bindToEvent(eventsObservable)
 		keepUntilDestroyDisposables += eventsObservable.connect()
 	}
 
 	inline fun <reified R : MviAction<STATE>> Observable<out MviAction<STATE>>.ofActionType(): Observable<R> = ofType(R::class.java)
+
+	inline fun <reified R> Observable<out R>.type(): Observable<R> = ofType(R::class.java)
+
 
 	protected fun Observable<out EitherEventOrReducer<STATE>>.bindToView() {
 		keepUntilDetachDisposables += observeOn(AndroidSchedulers.mainThread())
@@ -213,21 +242,24 @@ abstract class MviReactor<STATE : MviState> : ViewModel() {
 		unsafeEventsSubject.onNext(event)
 	}
 
-	private fun lifecycleEventChanged(new: LifecycleEvent) {
+	private fun lifecycleEventChanged(newLifecycleState: LifecycleState) {
 		val previous = lifecycleSubject.value
-		if (LifecycleEventCorrectOrderValidator.isValidOrder(previous, new)) {
-			lifecycleSubject.onNext(new)
+		if (LifecycleEventCorrectOrderValidator.isValidOrder(previous, newLifecycleState)) {
+			lifecycleSubject.onNext(newLifecycleState)
 		} else {
 			throw IllegalStateException("Lifecycle events are not in correct order. Make sure that you implemented it correctly. " +
-					"Previous: $previous Current: $new")
+					"Previous: $previous Current: $newLifecycleState")
 		}
 	}
+
+	private val safeBindableView: MviBindableView<STATE>
+		get() = bindableView ?: throw IllegalStateException("initialize was not called")
 
 	private val throwUnexpectedStreamError: (e: Throwable) -> Unit = {
 		throw IllegalStateException("This stream should not contains any onError calls", it)
 	}
 
 	private val debugLog: (e: Any) -> Unit = {
-		Log.d(this::class.java.simpleName, it.toString())
+//		Log.d(this::class.java.simpleName, it.toString())
 	}
 }

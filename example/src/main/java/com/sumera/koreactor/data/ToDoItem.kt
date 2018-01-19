@@ -1,6 +1,11 @@
 package com.sumera.koreactor.data
 
-data class ToDoItem(
+open class ToDoItem(
 		val id: Int,
 		val title: String
-)
+) {
+
+	open fun something(): String {
+		return "XXX"
+	}
+}

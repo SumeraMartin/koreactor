@@ -55,35 +55,35 @@ class InfinityActivity : BaseActivity<InfinityState>() {
 		// Show error layout
 		stateObservable
 				.getTrue { it.isInitialError }
-				.observe { infinity_placeholder.show(PlaceholderLayout.NETWORK_ERROR) }
+				.observeState { infinity_placeholder.show(PlaceholderLayout.NETWORK_ERROR) }
 
 		// Show loading layout
 		stateObservable
 				.getTrue { it.isInitialLoading }
-				.observe { infinity_placeholder.show(PlaceholderLayout.LOADING) }
+				.observeState { infinity_placeholder.show(PlaceholderLayout.LOADING) }
 
 		// Show infinity loading
 		stateObservable
 				.getChange { it.isInfinityLoading }
-				.observe { adapter.setLoading(it) }
+				.observeState { adapter.setLoading(it) }
 
 		// Show infinity error
 		stateObservable
 				.getChange { it.isInfinityError }
-				.observe { adapter.setError(it) }
+				.observeState { adapter.setError(it) }
 
 		// Show data
 		stateObservable
 				.getChange { it.data.asOptional() }
 				.filter { it.value?.isNotEmpty() ?: false }
-				.observe {
+				.observeState {
 					infinity_placeholder.hide()
 					adapter.data = it.value!!
 				}
 	}
 
 	override fun bindToEvent(eventsObservable: Observable<MviEvent<InfinityState>>) {
-		eventsObservable.observe { event ->
+		eventsObservable.observeEvent { event ->
 			when(event) {
 				is NavigateToDetailEvent ->
 					finish()

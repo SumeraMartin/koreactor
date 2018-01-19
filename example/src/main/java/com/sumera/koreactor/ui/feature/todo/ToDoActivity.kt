@@ -70,23 +70,23 @@ class ToDoActivity : BaseActivity<ToDoState>() {
 		// Show error layout
 		stateObservable
 				.getTrue { it.isError }
-				.observe { todo_placeholder.show(PlaceholderLayout.NETWORK_ERROR) }
+				.observeState { todo_placeholder.show(PlaceholderLayout.NETWORK_ERROR) }
 
 		// Show loading layout
 		stateObservable
 				.getTrue { it.isLoading }
-				.observe { todo_placeholder.show(PlaceholderLayout.LOADING) }
+				.observeState { todo_placeholder.show(PlaceholderLayout.LOADING) }
 
 		// Show swipe refresh layout
 		stateObservable
 				.getChange { it.isSwipeLoading }
-				.observe { todo_swipeRefresh.isRefreshing = it }
+				.observeState { todo_swipeRefresh.isRefreshing = it }
 
 		// Show data
 		stateObservable
 				.getChange { it.data.asOptional() }
 				.filter { it.value?.isNotEmpty() ?: false }
-				.observe {
+				.observeState {
 					todo_placeholder.hide()
 					adapter.data = it.value!!
 				}
@@ -94,16 +94,16 @@ class ToDoActivity : BaseActivity<ToDoState>() {
 		// Show info message
 		stateObservable
 				.getChange({ it.infoMessage }, { it.isNotEmpty() })
-				.observe { showSnackBar(it) }
+				.observeState { showSnackBar(it) }
 
 		// Hide info message
 		stateObservable
 				.getChange({ it.infoMessage }, { it.isEmpty() })
-				.observe { hideSnackbar() }
+				.observeState { hideSnackbar() }
 	}
 
 	override fun bindToEvent(eventsObservable: Observable<MviEvent<ToDoState>>) {
-		eventsObservable.observe { event ->
+		eventsObservable.observeEvent { event ->
 			when(event) {
 				is ShowToastEverytime ->
 					Toast.makeText(this, event.message, Toast.LENGTH_SHORT).show()

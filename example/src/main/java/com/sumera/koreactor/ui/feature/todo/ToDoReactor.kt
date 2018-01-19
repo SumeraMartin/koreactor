@@ -7,7 +7,7 @@ import com.sumera.koreactor.lib.behaviour.implementation.ShowTemporaryBehaviour
 import com.sumera.koreactor.lib.behaviour.implementation.SwipeRefreshLoadingListBehaviour
 import com.sumera.koreactor.lib.reactor.MviReactor
 import com.sumera.koreactor.lib.reactor.data.MviAction
-import com.sumera.koreactor.lib.reactor.lifecycle.AttachEvent
+import com.sumera.koreactor.lib.reactor.lifecycle.AttachState
 import com.sumera.koreactor.lib.util.extension.ofLifecycleType
 import com.sumera.koreactor.ui.feature.todo.contract.*
 import cz.muni.fi.pv256.movio2.uco_461464.injection.PerActivity
@@ -34,7 +34,7 @@ class ToDoReactor @Inject constructor(
 	}
 
 	override fun bind(actions: Observable<MviAction<ToDoState>>) {
-		val attachAction = lifecycleObservable.ofLifecycleType<AttachEvent>()
+		val attachAction = lifecycleObservable.ofLifecycleType<AttachState>()
 		val refreshAction = actions.ofActionType<OnSwipeRefreshAction>()
 		val retryAction = actions.ofActionType<OnRetryAction>()
 		val addItemAction = actions.ofActionType<OnAddItemAction>()
@@ -71,14 +71,14 @@ class ToDoReactor @Inject constructor(
 				loadingObservables = listOf(itemClickedAction.map { it.toDoItemWrapper.toDoItem }),
 				loadDataAction = { saveToDoItemInteractor.init(it).execute() },
 				cancelPrevious = false,
-				showLoadingReducer = { ShowToDoItemLoading(it.id) },
-				showErrorReducer = { ShowError },
-				showDataReducer = { ShowToDoItemCompleted(it.id) }
+				showLoading = { ShowToDoItemLoading(it.id) },
+				showError = { ShowError },
+				showData = { ShowToDoItemCompleted(it.id) }
 		).bindToView()
 
 		addItemAction
 				.flatMap { getToDoItemsOnceInteractor.execute() }
-				.flatMap { stateObservableOnce.map { AddToDoItem(generateNewId(it)) } }
+				.flatMapSingle { stateSingle.map { AddToDoItem(generateNewId(it)) } }
 				.doOnNext { showInfoAction.onNext(it.newItemId) }
 				.bindToView()
 

@@ -7,10 +7,10 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import com.sumera.koreactor.lib.reactor.MviReactor
 import com.sumera.koreactor.lib.reactor.data.MviState
-import com.sumera.koreactor.lib.view.MviBindable
+import com.sumera.koreactor.lib.view.MviBindableView
 import io.reactivex.disposables.CompositeDisposable
 
-abstract class MviFragment<S : MviState> : Fragment(), MviBindable<S> {
+abstract class MviFragment<S : MviState> : Fragment(), MviBindableView<S> {
 
 	abstract protected val reactor: MviReactor<S>
 
@@ -19,8 +19,8 @@ abstract class MviFragment<S : MviState> : Fragment(), MviBindable<S> {
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 
-		reactor.bindWith(this)
-		reactor.onCreate(savedInstanceState)
+		reactor.setBindableView(this)
+		reactor.onCreate(savedInstanceState == null)
 	}
 
 	override fun onStart() {
@@ -42,11 +42,13 @@ abstract class MviFragment<S : MviState> : Fragment(), MviBindable<S> {
 	}
 
 	override fun onDestroy() {
-		disposables.clear()
-
 		reactor.onDestroy(this)
 
 		super.onDestroy()
+	}
+
+	override fun unbindFromState() {
+		disposables.clear()
 	}
 
 	protected fun <T : ViewModel> getReactor(factory: ViewModelProvider.Factory, viewModel: Class<T>) : T {

@@ -5,7 +5,7 @@ import com.sumera.koreactor.lib.behaviour.implementation.InfinityLoadingBehaviou
 import com.sumera.koreactor.lib.behaviour.implementation.LoadingListBehaviour
 import com.sumera.koreactor.lib.reactor.MviReactor
 import com.sumera.koreactor.lib.reactor.data.MviAction
-import com.sumera.koreactor.lib.reactor.lifecycle.AttachEvent
+import com.sumera.koreactor.lib.reactor.lifecycle.AttachState
 import com.sumera.koreactor.lib.util.extension.ofLifecycleType
 import com.sumera.koreactor.ui.feature.infinity.contract.*
 import com.sumera.koreactor.ui.feature.todo.contract.InfinityState
@@ -31,7 +31,7 @@ class InfinityReactor @Inject constructor(
 	}
 
 	override fun bind(actions: Observable<MviAction<InfinityState>>) {
-		val attachAction = lifecycleObservable.ofLifecycleType<AttachEvent>()
+		val attachAction = lifecycleObservable.ofLifecycleType<AttachState>()
 		val retryInitialAction = actions.ofActionType<OnRetryInitialAction>()
 		val bottomScrolledAction = actions.ofActionType<OnScrolledToBottomAction>()
 		val retryInfinityLoadingAction = actions.ofActionType<OnRetryInfinityLoadingAction>()

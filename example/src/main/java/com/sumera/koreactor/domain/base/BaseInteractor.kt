@@ -8,7 +8,7 @@ abstract class BaseInteractor<T> {
 
 	abstract fun create(): Observable<T>
 
-	fun execute(): Observable<T> {
+	open fun execute(): Observable<T> {
 		return create()
 				.subscribeOn(Schedulers.io())
 				.doOnError { e -> Timber.e(e) }

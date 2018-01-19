@@ -1,23 +1,23 @@
 package com.sumera.koreactor.lib.reactor.lifecycle
 
-sealed class LifecycleEvent {
+sealed class LifecycleState {
 	override fun toString(): String {
 		return this::class.simpleName!!
 	}
 }
 
-object AttachEvent : LifecycleEvent()
+object AttachState : LifecycleState()
 
-object CreateEvent : LifecycleEvent()
+object CreateState : LifecycleState()
 
-object StartEvent : LifecycleEvent()
+object StartState : LifecycleState()
 
-object ResumeEvent : LifecycleEvent()
+object ResumeState : LifecycleState()
 
-object PauseEvent : LifecycleEvent()
+object PauseState : LifecycleState()
 
-object StopEvent : LifecycleEvent()
+object StopState : LifecycleState()
 
-object DestroyEvent : LifecycleEvent()
+object DestroyState : LifecycleState()
 
-object DetachEvent : LifecycleEvent()
+object DetachState : LifecycleState()

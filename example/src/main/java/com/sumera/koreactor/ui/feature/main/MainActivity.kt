@@ -46,7 +46,7 @@ class MainActivity : BaseActivity<MainState>() {
 	}
 
 	override fun bindToEvent(eventsObservable: Observable<MviEvent<MainState>>) {
-		eventsObservable.observe { event ->
+		eventsObservable.observeEvent { event ->
 			when (event) {
 				is NavigateToInfinityEvent -> startActivity(Intent(this, InfinityActivity::class.java))
 				is NavigateToCounterEvent -> startActivity(Intent(this, CounterActivity::class.java))

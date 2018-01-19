@@ -41,11 +41,11 @@ class CounterActivity: BaseActivity<CounterState>() {
 	override fun bindToState(stateObservable: Observable<CounterState>) {
 		stateObservable
 				.getChange { it.counter }
-				.observe { counter_countText.text = it.toString() }
+				.observeState { counter_countText.text = it.toString() }
 	}
 
 	override fun bindToEvent(eventsObservable: Observable<MviEvent<CounterState>>) {
-		eventsObservable.observe { event ->
+		eventsObservable.observeEvent { event ->
 			when(event) {
 				is ShowNumberIsDivisibleByFiveToast ->
 					Toast.makeText(this, "Is divisible by 5", Toast.LENGTH_SHORT).show()
