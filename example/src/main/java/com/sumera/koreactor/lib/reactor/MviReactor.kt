@@ -49,7 +49,7 @@ abstract class MviReactor<STATE : MviState> : ViewModel() {
 	protected val resumeLifecycleObservable: Observable<ResumeState>
 		get() = lifecycleObservable.ofLifecycleType()
 
-	protected val paseLifecycleObservable: Observable<PauseState>
+	protected val pauseLifecycleObservable: Observable<PauseState>
 		get() = lifecycleObservable.ofLifecycleType()
 
 	protected val stopLifecycleObservable: Observable<StopState>
