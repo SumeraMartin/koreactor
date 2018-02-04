@@ -1,18 +1,18 @@
 package com.sumera.koreactorexampleapp.ui.feature.simpleloading
 
-import com.sumera.koreactor.behaviour.ObservableWorker
 import com.sumera.koreactor.behaviour.implementation.LoadingBehaviour
 import com.sumera.koreactor.behaviour.messages
+import com.sumera.koreactor.behaviour.observable
 import com.sumera.koreactor.behaviour.triggers
-import com.sumera.koreactorexampleapp.domain.GetSomeTextDataInteractor
 import com.sumera.koreactor.reactor.MviReactor
 import com.sumera.koreactor.reactor.data.MviAction
+import com.sumera.koreactorexampleapp.domain.GetSomeTextDataInteractor
+import com.sumera.koreactorexampleapp.injection.PerActivity
 import com.sumera.koreactorexampleapp.ui.feature.simpleloading.contract.RetryClicked
 import com.sumera.koreactorexampleapp.ui.feature.simpleloading.contract.ShowData
 import com.sumera.koreactorexampleapp.ui.feature.simpleloading.contract.ShowError
 import com.sumera.koreactorexampleapp.ui.feature.simpleloading.contract.ShowLoading
 import com.sumera.koreactorexampleapp.ui.feature.simpleloading.contract.SimpleLoadingState
-import com.sumera.koreactorexampleapp.injection.PerActivity
 import io.reactivex.Observable
 import javax.inject.Inject
 
@@ -30,7 +30,7 @@ class SimpleLoadingReactor @Inject constructor(
 
 		LoadingBehaviour<Any, String, SimpleLoadingState>(
 				triggers = triggers(attachLifecycleObservable, retryClicks),
-				loadWorker = ObservableWorker{ dataLoader.execute() },
+				loadWorker = observable { dataLoader.execute() },
 				cancelPrevious = true,
 				loadingMessage = messages({ ShowLoading }),
 				errorMessage = messages({ ShowError }),
