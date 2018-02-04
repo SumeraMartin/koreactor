@@ -7,7 +7,7 @@
 
 	<fragment
 		android:id="@+id/fragment"
-		android:name="com.sumera.koreactor.ui.feature.timer.TimerFragment"
+		android:name="com.sumera.koreactorexampleapp.ui.feature.timer.TimerFragment"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:layout_gravity="center_horizontal" />
