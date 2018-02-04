@@ -5,7 +5,7 @@ import android.widget.Toast
 import com.jakewharton.rxbinding2.view.clicks
 import com.sumera.koreactor.R
 import com.sumera.koreactor.lib.reactor.MviReactor
-import com.sumera.koreactor.lib.reactor.data.event.MviEvent
+import com.sumera.koreactor.lib.reactor.data.MviEvent
 import com.sumera.koreactor.lib.util.extension.getChange
 import com.sumera.koreactor.ui.base.BaseActivity
 import com.sumera.koreactor.ui.feature.counter.contract.CounterState
@@ -18,13 +18,14 @@ import javax.inject.Inject
 
 class CounterActivity: BaseActivity<CounterState>() {
 
-	@Inject lateinit var viewModelFactory: CounterReactorFactory
+	@Inject lateinit var reactorFactory: CounterReactorFactory
 
 	override val layoutRes: Int
 		get() = R.layout.activity_counter
 
-	override val reactor: MviReactor<CounterState>
-		get() = getReactor(viewModelFactory, CounterReactor::class.java)
+	override fun createReactor(): MviReactor<CounterState> {
+		return getReactor(reactorFactory, CounterReactor::class.java)
+	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)

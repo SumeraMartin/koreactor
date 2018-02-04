@@ -9,3 +9,7 @@ object OnInfinityButtonClickAction :  MainActions()
 object OnToDoButtonClickAction : MainActions()
 
 object OnCounterButtonCLickAction : MainActions()
+
+object OnSimpleLoadingButtonClickAction : MainActions()
+
+object OnTimerButtonClickAction : MainActions()

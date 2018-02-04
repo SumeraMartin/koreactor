@@ -1,4 +1,4 @@
-package com.sumera.koreactor.lib.reactor.data.event
+package com.sumera.koreactor.lib.reactor.data
 
 sealed class MviEventBehaviour {
 

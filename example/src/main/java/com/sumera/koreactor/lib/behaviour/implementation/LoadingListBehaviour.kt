@@ -1,46 +1,45 @@
 package com.sumera.koreactor.lib.behaviour.implementation
 
+import com.sumera.koreactor.lib.behaviour.Messages
 import com.sumera.koreactor.lib.behaviour.MviBehaviour
+import com.sumera.koreactor.lib.behaviour.Triggers
+import com.sumera.koreactor.lib.behaviour.Worker
+import com.sumera.koreactor.lib.reactor.data.MviReactorMessage
 import com.sumera.koreactor.lib.reactor.data.MviState
-import com.sumera.koreactor.lib.reactor.data.either.EitherEventOrReducer
 import io.reactivex.Observable
 
-data class LoadingListBehaviour<INPUT_DATA, DATA, STATE : MviState>(
-		private val loadingObservables: Collection<Observable<out INPUT_DATA>>,
-		private val loadDataAction: (INPUT_DATA) -> Observable<out List<DATA>>,
+data class LoadingListBehaviour<INPUT_DATA, OUTPUT_DATA, STATE : MviState>(
+		private val loadingTriggers: Triggers<out INPUT_DATA>,
+		private val loadWorker: Worker<INPUT_DATA, List<OUTPUT_DATA>>,
 		private val cancelPrevious: Boolean,
-		private val showLoadingReducer: (INPUT_DATA) -> EitherEventOrReducer<STATE>,
-		private val showErrorReducer: (Throwable) -> EitherEventOrReducer<STATE>,
-		private val showEmptyReducer: (() -> EitherEventOrReducer<STATE>)? = null,
-		private val showDataReducer: (List<DATA>) -> EitherEventOrReducer<STATE>
+		private val loadingMessage: Messages<INPUT_DATA, STATE>,
+		private val errorMessage: Messages<Throwable, STATE>,
+		private val emptyMessage: Messages<INPUT_DATA, STATE>,
+		private val dataMessage: Messages<List<OUTPUT_DATA>, STATE>
 ): MviBehaviour<STATE> {
 
-	override fun createObservable(): Observable<EitherEventOrReducer<STATE>> {
+	override fun createObservable(): Observable<MviReactorMessage<STATE>> {
 		if (cancelPrevious) {
 			return Observable
-					.merge(loadingObservables)
+					.merge(loadingTriggers.observables)
 					.switchMap { createLoadingObservable(it) }
 		}
 
 		return Observable
-				.merge(loadingObservables)
+				.merge(loadingTriggers.observables)
 				.flatMap { createLoadingObservable(it) }
 	}
 
-	private fun createLoadingObservable(inputData: INPUT_DATA): Observable<EitherEventOrReducer<STATE>> {
-		return loadDataAction.invoke(inputData)
+	private fun createLoadingObservable(inputData: INPUT_DATA): Observable<MviReactorMessage<STATE>> {
+		return loadWorker.execute(inputData)
 				.map {
-					if (showEmptyReducer == null) {
-						showDataReducer.invoke(it)
+					if (it.isNotEmpty()) {
+						dataMessage.applyData(it)
 					} else {
-						if (it.isNotEmpty()) {
-							showDataReducer.invoke(it)
-						} else {
-							showEmptyReducer.invoke()
-						}
+						emptyMessage.applyData(inputData)
 					}
 				}
-				.onErrorReturn { showErrorReducer.invoke(it) }
-				.startWith(showLoadingReducer.invoke(inputData))
+				.onErrorReturn { errorMessage.applyData(it) }
+				.startWith(loadingMessage.applyData(inputData))
 	}
 }

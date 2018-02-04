@@ -1,28 +1,31 @@
 package com.sumera.koreactor.lib.behaviour.implementation
 
+import com.sumera.koreactor.lib.behaviour.Messages
 import com.sumera.koreactor.lib.behaviour.MviBehaviour
+import com.sumera.koreactor.lib.behaviour.Triggers
+import com.sumera.koreactor.lib.behaviour.Worker
+import com.sumera.koreactor.lib.reactor.data.MviReactorMessage
 import com.sumera.koreactor.lib.reactor.data.MviState
-import com.sumera.koreactor.lib.reactor.data.either.EitherEventOrReducer
 import io.reactivex.Observable
 
-data class SwipeRefreshLoadingBehaviour<INPUT_DATA, DATA, STATE : MviState>(
-		private val loadingObservables: Collection<Observable<out INPUT_DATA>>,
-		private val swipeRefreshObservables: Collection<Observable<out INPUT_DATA>>,
-		private val loadDataAction: (INPUT_DATA) -> Observable<DATA>,
+data class SwipeRefreshLoadingBehaviour<INPUT_DATA, OUTPUT_DATA, STATE : MviState>(
+		private val initialLoadingTriggers: Triggers<out INPUT_DATA>,
+		private val swipeRefreshTriggers: Triggers<out INPUT_DATA>,
+		private val loadWorker: Worker<INPUT_DATA, OUTPUT_DATA>,
 		private val cancelPrevious: Boolean,
-		private val showLoadingReducer: (INPUT_DATA) -> EitherEventOrReducer<STATE>,
-		private val showSwipeRefreshReducer: () -> EitherEventOrReducer<STATE>,
-		private val showErrorReducer: (Throwable) -> EitherEventOrReducer<STATE>,
-		private val showDataReducer: (DATA) -> EitherEventOrReducer<STATE>
+		private val loadingMessage: Messages<INPUT_DATA, STATE>,
+		private val swipeRefreshMessage: Messages<INPUT_DATA, STATE>,
+		private val errorMessage: Messages<Throwable, STATE>,
+		private val dataMessage: Messages<OUTPUT_DATA, STATE>
 ): MviBehaviour<STATE> {
 
-	override fun createObservable(): Observable<EitherEventOrReducer<STATE>> {
+	override fun createObservable(): Observable<MviReactorMessage<STATE>> {
 		val loadingActions = Observable
-				.merge(loadingObservables)
+				.merge(initialLoadingTriggers.observables)
 				.map { DataWithSwipeRefreshInfo(it, false) }
 
 		val swipeRefreshActions = Observable
-				.merge(swipeRefreshObservables)
+				.merge(swipeRefreshTriggers.observables)
 				.map { DataWithSwipeRefreshInfo(it, true) }
 
 		val merged = Observable.merge(loadingActions, swipeRefreshActions)
@@ -33,17 +36,17 @@ data class SwipeRefreshLoadingBehaviour<INPUT_DATA, DATA, STATE : MviState>(
 		return merged.flatMap { createLoadingObservable(it) }
 	}
 
-	private fun createLoadingObservable(dataWithSwipeRefreshInfo: DataWithSwipeRefreshInfo<INPUT_DATA>): Observable<EitherEventOrReducer<STATE>> {
-		val loadMovies = loadDataAction.invoke(dataWithSwipeRefreshInfo.inputData)
-				.map { showDataReducer.invoke(it) }
-				.onErrorReturn { showErrorReducer.invoke(it) }
+	private fun createLoadingObservable(dataWithSwipeRefreshInfo: DataWithSwipeRefreshInfo<INPUT_DATA>): Observable<MviReactorMessage<STATE>> {
+		val loadMovies = loadWorker.execute(dataWithSwipeRefreshInfo.inputData)
+				.map { dataMessage.applyData(it) }
+				.onErrorReturn { errorMessage.applyData(it) }
 		if (dataWithSwipeRefreshInfo.isSwipeRefreshInput) {
-			return loadMovies.startWith(showSwipeRefreshReducer.invoke())
+			return loadMovies.startWith(swipeRefreshMessage.applyData(dataWithSwipeRefreshInfo.inputData))
 		}
-		return loadMovies.startWith(showLoadingReducer.invoke(dataWithSwipeRefreshInfo.inputData))
+		return loadMovies.startWith(loadingMessage.applyData(dataWithSwipeRefreshInfo.inputData))
 	}
 
-	data class DataWithSwipeRefreshInfo<INPUT_DATA>(
+	data class DataWithSwipeRefreshInfo<out INPUT_DATA>(
 			val inputData: INPUT_DATA,
 			val isSwipeRefreshInput: Boolean
 	)

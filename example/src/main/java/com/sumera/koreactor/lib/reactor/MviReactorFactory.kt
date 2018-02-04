@@ -5,10 +5,10 @@ import android.arch.lifecycle.ViewModelProvider
 
 abstract class MviReactorFactory<out VM : ViewModel> : ViewModelProvider.Factory {
 
-	abstract val viewModel: VM
+	abstract val reactor: VM
 
 	@SuppressWarnings("unchecked")
 	override fun <T : ViewModel> create(modelClass: Class<T>): T {
-		return viewModel as T
+		return reactor as T
 	}
 }

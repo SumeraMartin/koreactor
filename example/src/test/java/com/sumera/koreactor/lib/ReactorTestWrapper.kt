@@ -3,13 +3,20 @@ package com.sumera.koreactor.lib
 import com.sumera.koreactor.lib.reactor.MviReactor
 import com.sumera.koreactor.lib.reactor.data.MviAction
 import com.sumera.koreactor.lib.reactor.data.MviState
-import com.sumera.koreactor.lib.reactor.data.event.MviEvent
-import com.sumera.koreactor.lib.reactor.lifecycle.*
+import com.sumera.koreactor.lib.reactor.data.MviEvent
+import com.sumera.koreactor.lib.reactor.lifecycle.CreateState
+import com.sumera.koreactor.lib.reactor.lifecycle.DestroyState
+import com.sumera.koreactor.lib.reactor.lifecycle.DetachState
+import com.sumera.koreactor.lib.reactor.lifecycle.LifecycleState
+import com.sumera.koreactor.lib.reactor.lifecycle.PauseState
+import com.sumera.koreactor.lib.reactor.lifecycle.ResumeState
+import com.sumera.koreactor.lib.reactor.lifecycle.StartState
+import com.sumera.koreactor.lib.reactor.lifecycle.StopState
 import io.reactivex.schedulers.TestScheduler
 
 class ReactorTestWrapper<STATE : MviState>(
 		private val reactor: MviReactor<STATE>,
-		private val testView: TestMviBindable<STATE>,
+		private val testView: TestMviBindableDelegate<STATE>,
 		private val testScheduler: TestScheduler
 ) {
 
@@ -205,7 +212,7 @@ class ReactorTestWrapper<STATE : MviState>(
 	//region Send actions
 
 	fun sendAction(action: MviAction<STATE>) {
-		reactor.propagateAction(action)
+		reactor.sendAction(action)
 
 		testScheduler.triggerActions()
 	}

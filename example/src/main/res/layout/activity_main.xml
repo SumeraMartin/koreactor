@@ -25,4 +25,18 @@
 		android:layout_gravity="center"
 		android:text="COUNTER"/>
 
+	<Button
+		android:id="@+id/main_simpleLoading"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center"
+		android:text="SIMPLE LOADING"/>
+
+	<Button
+		android:id="@+id/main_simpleTimer"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center"
+		android:text="SIMPLE TIMER"/>
+
 </LinearLayout>

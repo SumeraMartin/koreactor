@@ -1,23 +1,29 @@
 package com.sumera.koreactor.lib.reactor
 
-import android.app.Activity
 import android.arch.lifecycle.ViewModel
-import android.support.v4.app.Fragment
 import com.sumera.koreactor.lib.behaviour.MviBehaviour
+import com.sumera.koreactor.lib.internal.data.fold
 import com.sumera.koreactor.lib.internal.extension.cacheEventsUntilViewIsCreated
 import com.sumera.koreactor.lib.internal.extension.cacheEventsUntilViewIsStarted
 import com.sumera.koreactor.lib.internal.extension.throwEventsAwayIfViewIsNotStarted
-import com.sumera.koreactor.lib.internal.util.DetachReactorHelper
 import com.sumera.koreactor.lib.internal.util.LifecycleEventCorrectOrderValidator
+import com.sumera.koreactor.lib.reactor.data.EventOrReducer
 import com.sumera.koreactor.lib.reactor.data.MviAction
+import com.sumera.koreactor.lib.reactor.data.MviEvent
+import com.sumera.koreactor.lib.reactor.data.MviReactorMessage
 import com.sumera.koreactor.lib.reactor.data.MviState
 import com.sumera.koreactor.lib.reactor.data.MviStateReducer
-import com.sumera.koreactor.lib.reactor.data.either.EitherEventOrReducer
-import com.sumera.koreactor.lib.reactor.data.either.fold
-import com.sumera.koreactor.lib.reactor.data.event.MviEvent
-import com.sumera.koreactor.lib.reactor.lifecycle.*
+import com.sumera.koreactor.lib.reactor.lifecycle.AttachState
+import com.sumera.koreactor.lib.reactor.lifecycle.CreateState
+import com.sumera.koreactor.lib.reactor.lifecycle.DestroyState
+import com.sumera.koreactor.lib.reactor.lifecycle.DetachState
+import com.sumera.koreactor.lib.reactor.lifecycle.LifecycleState
+import com.sumera.koreactor.lib.reactor.lifecycle.PauseState
+import com.sumera.koreactor.lib.reactor.lifecycle.ResumeState
+import com.sumera.koreactor.lib.reactor.lifecycle.StartState
+import com.sumera.koreactor.lib.reactor.lifecycle.StopState
 import com.sumera.koreactor.lib.util.extension.ofLifecycleType
-import com.sumera.koreactor.lib.view.MviBindableView
+import com.sumera.koreactor.lib.view.MviBindableViewDelegate
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -65,7 +71,7 @@ abstract class MviReactor<STATE : MviState> : ViewModel() {
 
 	protected abstract fun bind(actions: Observable<MviAction<STATE>>)
 
-	private var bindableView: MviBindableView<STATE>? = null
+	private var bindableViewDelegate: MviBindableViewDelegate<STATE>? = null
 
 	private val keepUntilDetachDisposables = CompositeDisposable()
 
@@ -83,16 +89,12 @@ abstract class MviReactor<STATE : MviState> : ViewModel() {
 
 	private val lifecycleSubject = BehaviorSubject.create<LifecycleState>()
 
-	fun propagateAction(action: MviAction<STATE>) {
+	fun sendAction(action: MviAction<STATE>) {
 		actionsSubject.onNext(action)
 	}
 
-	fun bindAction(actionObservable: Observable<out MviAction<STATE>>) {
-		keepUntilDestroyDisposables += actionObservable.subscribe { value -> propagateAction(value) }
-	}
-
-	fun setBindableView(bindableView: MviBindableView<STATE>) {
-		this.bindableView = bindableView
+	fun setBindableView(bindableViewDelegate: MviBindableViewDelegate<STATE>) {
+		this.bindableViewDelegate = bindableViewDelegate
 	}
 
 	fun onCreate(isNewlyCreated: Boolean) {
@@ -127,17 +129,9 @@ abstract class MviReactor<STATE : MviState> : ViewModel() {
 	fun onStop() {
 		lifecycleEventChanged(StopState)
 
-		safeBindableView.unbindFromState()
+		safeBindableViewDelegate.unbindFromState()
 
 		keepUntilVisibleDisposables.clear()
-	}
-
-	fun onDestroy(fragment: Fragment) {
-		onDestroy(DetachReactorHelper.shouldDetachReactor(fragment))
-	}
-
-	fun onDestroy(activity: Activity) {
-		onDestroy(DetachReactorHelper.shouldDetachReactor(activity))
 	}
 
 	fun onDestroy(shouldUnbindReactor: Boolean) {
@@ -148,12 +142,13 @@ abstract class MviReactor<STATE : MviState> : ViewModel() {
 		if (shouldUnbindReactor) {
 			lifecycleEventChanged(DetachState)
 
-			safeBindableView.unbindFromEvents()
+			safeBindableViewDelegate.unbindActions()
+			safeBindableViewDelegate.unbindFromEvents()
 
 			keepUntilDetachDisposables.clear()
 		}
 
-		this.bindableView = null
+		this.bindableViewDelegate = null
 	}
 
 	private fun bindActionsToReactor() {
@@ -164,7 +159,7 @@ abstract class MviReactor<STATE : MviState> : ViewModel() {
 
 	private fun bindStateToView() {
 		val stateObservable = stateSubject.doOnNext(debugLog).publish()
-		safeBindableView.bindToState(stateObservable)
+		safeBindableViewDelegate.bindToState(stateObservable)
 		keepUntilVisibleDisposables += stateObservable.connect()
 	}
 
@@ -191,7 +186,7 @@ abstract class MviReactor<STATE : MviState> : ViewModel() {
 				.cacheEventsUntilViewIsCreated(lifecycleObservable)
 				.publish()
 
-		safeBindableView.bindToEvent(eventsObservable)
+		safeBindableViewDelegate.bindToEvent(eventsObservable)
 		keepUntilDestroyDisposables += eventsObservable.connect()
 	}
 
@@ -199,19 +194,18 @@ abstract class MviReactor<STATE : MviState> : ViewModel() {
 
 	inline fun <reified R> Observable<out R>.type(): Observable<R> = ofType(R::class.java)
 
-
-	protected fun Observable<out EitherEventOrReducer<STATE>>.bindToView() {
-		keepUntilDetachDisposables += observeOn(AndroidSchedulers.mainThread())
-				.subscribe({ either ->
-					applyEither(either)
-				}, throwUnexpectedStreamError)
-	}
-
 	protected fun MviBehaviour<STATE>.bindToView() {
 		keepUntilDetachDisposables += createObservable()
 				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe({ either ->
-					applyEither(either)
+				.subscribe({ reactorMessage ->
+					reactorMessage.getMessages().forEach { applyEither(it) }
+				}, throwUnexpectedStreamError)
+	}
+
+	protected fun Observable<out MviReactorMessage<STATE>>.bindToView() {
+		keepUntilDetachDisposables += observeOn(AndroidSchedulers.mainThread())
+				.subscribe({ reactorMessage ->
+					reactorMessage.getMessages().forEach { applyEither(it) }
 				}, throwUnexpectedStreamError)
 	}
 
@@ -229,7 +223,7 @@ abstract class MviReactor<STATE : MviState> : ViewModel() {
 				}, throwUnexpectedStreamError)
 	}
 
-	private fun applyEither(either: EitherEventOrReducer<STATE>) {
+	private fun applyEither(either: EventOrReducer<STATE>) {
 		either.toEither.fold({ applyEvent(it) }, { applyReducer(it) })
 	}
 
@@ -252,8 +246,8 @@ abstract class MviReactor<STATE : MviState> : ViewModel() {
 		}
 	}
 
-	private val safeBindableView: MviBindableView<STATE>
-		get() = bindableView ?: throw IllegalStateException("initialize was not called")
+	private val safeBindableViewDelegate: MviBindableViewDelegate<STATE>
+		get() = bindableViewDelegate ?: throw IllegalStateException("initialize was not called")
 
 	private val throwUnexpectedStreamError: (e: Throwable) -> Unit = {
 		throw IllegalStateException("This stream should not contains any onError calls", it)

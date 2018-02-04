@@ -25,7 +25,7 @@ abstract class ReactorTestRule<STATE : MviState> : TestRule {
 
 	private lateinit var reactor: MviReactor<STATE>
 
-	private lateinit var testView: TestMviBindable<STATE>
+	private lateinit var testView: TestMviBindableDelegate<STATE>
 
 	private lateinit var reactorTestWrapper: ReactorTestWrapper<STATE>
 
@@ -53,7 +53,7 @@ abstract class ReactorTestRule<STATE : MviState> : TestRule {
 
 	private fun initializeReactor() {
 		reactor = createNewReactorInstance()
-		testView = TestMviBindable()
+		testView = TestMviBindableDelegate()
 		reactorTestWrapper = ReactorTestWrapper(reactor, testView, testScheduler)
 	}
 

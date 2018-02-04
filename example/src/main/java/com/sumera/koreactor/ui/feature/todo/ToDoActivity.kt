@@ -8,14 +8,23 @@ import com.jakewharton.rxbinding2.support.v4.widget.refreshes
 import com.jakewharton.rxbinding2.view.clicks
 import com.sumera.koreactor.R
 import com.sumera.koreactor.lib.reactor.MviReactor
-import com.sumera.koreactor.lib.reactor.data.event.MviEvent
+import com.sumera.koreactor.lib.reactor.data.MviEvent
 import com.sumera.koreactor.lib.util.data.asOptional
 import com.sumera.koreactor.lib.util.extension.getChange
 import com.sumera.koreactor.lib.util.extension.getTrue
 import com.sumera.koreactor.ui.base.BaseActivity
 import com.sumera.koreactor.ui.common.PlaceholderLayout
 import com.sumera.koreactor.ui.feature.todo.adapter.ToDoAdapter
-import com.sumera.koreactor.ui.feature.todo.contract.*
+import com.sumera.koreactor.ui.feature.todo.contract.NavigateToSomewhereElse
+import com.sumera.koreactor.ui.feature.todo.contract.OnAddItemAction
+import com.sumera.koreactor.ui.feature.todo.contract.OnRetryAction
+import com.sumera.koreactor.ui.feature.todo.contract.OnSwipeRefreshAction
+import com.sumera.koreactor.ui.feature.todo.contract.OnToDoItemAction
+import com.sumera.koreactor.ui.feature.todo.contract.OnToolbarIconClicked
+import com.sumera.koreactor.ui.feature.todo.contract.ShowToastEverytime
+import com.sumera.koreactor.ui.feature.todo.contract.ShowToastOnlyVisible
+import com.sumera.koreactor.ui.feature.todo.contract.ShowToastOnlyVisibleBuffered
+import com.sumera.koreactor.ui.feature.todo.contract.ToDoState
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.activity_todo.*
 import javax.inject.Inject
@@ -30,8 +39,9 @@ class ToDoActivity : BaseActivity<ToDoState>() {
 	override val layoutRes: Int
 		get() = R.layout.activity_todo
 
-	override val reactor: MviReactor<ToDoState>
-		get() = getReactor(viewModelFactory, ToDoReactor::class.java)
+	override fun createReactor(): MviReactor<ToDoState> {
+		return getReactor(viewModelFactory, ToDoReactor::class.java)
+	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)

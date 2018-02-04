@@ -1,15 +1,38 @@
 package com.sumera.koreactor.ui.feature.todo
 
+import com.sumera.koreactor.data.ToDoItem
 import com.sumera.koreactor.domain.GetToDoItemsOnceInteractor
 import com.sumera.koreactor.domain.SaveToDoItemInteractor
+import com.sumera.koreactor.lib.behaviour.ObservableWorker
 import com.sumera.koreactor.lib.behaviour.implementation.LoadingBehaviour
 import com.sumera.koreactor.lib.behaviour.implementation.ShowTemporaryBehaviour
 import com.sumera.koreactor.lib.behaviour.implementation.SwipeRefreshLoadingListBehaviour
+import com.sumera.koreactor.lib.behaviour.messages
+import com.sumera.koreactor.lib.behaviour.triggers
 import com.sumera.koreactor.lib.reactor.MviReactor
 import com.sumera.koreactor.lib.reactor.data.MviAction
 import com.sumera.koreactor.lib.reactor.lifecycle.AttachState
 import com.sumera.koreactor.lib.util.extension.ofLifecycleType
-import com.sumera.koreactor.ui.feature.todo.contract.*
+import com.sumera.koreactor.ui.feature.todo.adapter.ToDoItemWrapper
+import com.sumera.koreactor.ui.feature.todo.contract.AddToDoItem
+import com.sumera.koreactor.ui.feature.todo.contract.HideInfoMessage
+import com.sumera.koreactor.ui.feature.todo.contract.OnAddItemAction
+import com.sumera.koreactor.ui.feature.todo.contract.OnRetryAction
+import com.sumera.koreactor.ui.feature.todo.contract.OnSwipeRefreshAction
+import com.sumera.koreactor.ui.feature.todo.contract.OnToDoItemAction
+import com.sumera.koreactor.ui.feature.todo.contract.OnToolbarIconClicked
+import com.sumera.koreactor.ui.feature.todo.contract.ShowData
+import com.sumera.koreactor.ui.feature.todo.contract.ShowEmpty
+import com.sumera.koreactor.ui.feature.todo.contract.ShowError
+import com.sumera.koreactor.ui.feature.todo.contract.ShowInfoMessage
+import com.sumera.koreactor.ui.feature.todo.contract.ShowLoading
+import com.sumera.koreactor.ui.feature.todo.contract.ShowSwipeRefreshLoading
+import com.sumera.koreactor.ui.feature.todo.contract.ShowToDoItemCompleted
+import com.sumera.koreactor.ui.feature.todo.contract.ShowToDoItemLoading
+import com.sumera.koreactor.ui.feature.todo.contract.ShowToastEverytime
+import com.sumera.koreactor.ui.feature.todo.contract.ShowToastOnlyVisible
+import com.sumera.koreactor.ui.feature.todo.contract.ShowToastOnlyVisibleBuffered
+import com.sumera.koreactor.ui.feature.todo.contract.ToDoState
 import cz.muni.fi.pv256.movio2.uco_461464.injection.PerActivity
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
@@ -46,34 +69,34 @@ class ToDoReactor @Inject constructor(
 		getToDoItemsOnceInteractor.execute().map { ShowLoading }
 				.bindToView()
 
-		SwipeRefreshLoadingListBehaviour(
-				loadingObservables = listOf(attachAction, refreshAction),
-				swipeRefreshObservables = listOf(retryAction),
-				loadDataAction = { getToDoItemsOnceInteractor.execute() },
+		SwipeRefreshLoadingListBehaviour<Any, ToDoItemWrapper, ToDoState>(
+				initialLoadingTriggers = triggers(attachAction, refreshAction),
+				swipeRefreshTriggers = triggers(retryAction),
+				loadWorker = ObservableWorker{ getToDoItemsOnceInteractor.execute() },
 				cancelPrevious = true,
-				showLoadingReducer = { ShowLoading },
-				showSwipeRefreshReducer = { ShowSwipeRefreshLoading },
-				showErrorReducer = { ShowError },
-				showEmptyReducer = { ShowEmpty },
-				showDataReducer = { ShowData(it) }
+				loadingMessage = messages({ ShowLoading }),
+				swipeRefreshMessage = messages({ ShowSwipeRefreshLoading }),
+				errorMessage = messages({ ShowError }),
+				emptyMessage = messages({ ShowEmpty }),
+				dataMessage = messages({ ShowData(it) })
 		).bindToView()
 
-		ShowTemporaryBehaviour(
-				startAction = listOf(showInfoAction),
+		ShowTemporaryBehaviour<Any, ToDoState>(
+				triggers = triggers(showInfoAction),
 				duration = 3,
 				timeUnit = TimeUnit.SECONDS,
 				cancelPrevious = true,
-				startReducer = { ShowInfoMessage("Item added " + it) },
-				endReducer = { HideInfoMessage }
+				startMessage = messages({ ShowInfoMessage("Item added " + it) }),
+				endMessage = messages({ HideInfoMessage })
 		).bindToView()
 
-		LoadingBehaviour(
-				loadingObservables = listOf(itemClickedAction.map { it.toDoItemWrapper.toDoItem }),
-				loadDataAction = { saveToDoItemInteractor.init(it).execute() },
+		LoadingBehaviour<ToDoItem, ToDoItem, ToDoState>(
+				triggers = triggers(itemClickedAction.map { it.toDoItemWrapper.toDoItem }),
+				loadWorker = ObservableWorker{ saveToDoItemInteractor.init(it).execute() },
 				cancelPrevious = false,
-				showLoading = { ShowToDoItemLoading(it.id) },
-				showError = { ShowError },
-				showData = { ShowToDoItemCompleted(it.id) }
+				loadingMessage = messages({ ShowToDoItemLoading(it.id) }),
+				errorMessage = messages({ ShowError }),
+				dataMessage = messages({ ShowToDoItemCompleted(it.id) })
 		).bindToView()
 
 		addItemAction
@@ -92,35 +115,7 @@ class ToDoReactor @Inject constructor(
 				}
 				.map { it.second }
 				.bindToView()
-
-//		Observable.merge(attachAction, retryAction, refreshAction)
-//				.switchMap { loadMovies(it) }
-//				.bindToView()
-//
-//
-//		itemClickedAction
-//				.flatMap { saveMovie(it.toDoItemWrapper.toDoItem)}
-//				.bindToView()
 	}
-
-//	private fun loadMovies(inputValue: Any): Observable<out MviStateReducer<ToDoState>> {
-//		val loadMovies = getToDoItemsOnceInteractor.execute()
-//				.map { if (it.isNotEmpty()) ShowData(it) else ShowEmpty }
-//				.onErrorReturn { ShowError }
-//		if (inputValue is OnSwipeRefreshAction) {
-//			return loadMovies.startWith(ShowSwipeRefreshLoading)
-//		}
-//		return loadMovies.startWith(ShowSwipeRefreshLoading)
-//	}
-//
-//	private fun saveMovie(toDoitem: ToDoItemWrapper): Observable<out MviStateReducer<ToDoState>> {
-//		val id = toDoitem.id
-//		return saveToDoItemInteractor.init(toDoitem).execute()
-//				.map { ShowToDoItemCompleted(it.toDoItem.id) as ToDoStateReducer }
-//				.doOnError { showErrorMessageAction.onNext("Something went wrong") }
-//				.onErrorReturn { ShowError }
-//				.startWith(ShowToDoItemLoading(id))
-//	}
 
 	private fun generateNewId(state: ToDoState) : Int {
 		if (state.data == null) {

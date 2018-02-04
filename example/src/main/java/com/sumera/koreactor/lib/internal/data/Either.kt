@@ -1,4 +1,4 @@
-package com.sumera.koreactor.lib.reactor.data.either
+package com.sumera.koreactor.lib.internal.data
 
 sealed class Either<out L, out R>
 

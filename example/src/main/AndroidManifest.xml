@@ -38,6 +38,18 @@
 			android:label="@string/app_name"
 			android:theme="@style/AppTheme.NoActionBar">
 		</activity>
+
+		<activity
+			android:name=".ui.feature.simpleloading.SimpleLoadingActivity"
+			android:label="@string/app_name"
+			android:theme="@style/AppTheme.NoActionBar">
+		</activity>
+
+		<activity
+			android:name=".ui.feature.timer.activity.TimerActivity"
+			android:label="@string/app_name"
+			android:theme="@style/AppTheme.NoActionBar">
+		</activity>
 	</application>
 
 </manifest>

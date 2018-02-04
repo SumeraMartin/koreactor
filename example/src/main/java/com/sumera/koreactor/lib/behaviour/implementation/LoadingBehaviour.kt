@@ -1,31 +1,34 @@
 package com.sumera.koreactor.lib.behaviour.implementation
 
+import com.sumera.koreactor.lib.behaviour.Messages
 import com.sumera.koreactor.lib.behaviour.MviBehaviour
+import com.sumera.koreactor.lib.behaviour.Triggers
+import com.sumera.koreactor.lib.behaviour.Worker
+import com.sumera.koreactor.lib.reactor.data.MviReactorMessage
 import com.sumera.koreactor.lib.reactor.data.MviState
-import com.sumera.koreactor.lib.reactor.data.either.EitherEventOrReducer
 import io.reactivex.Observable
 
-data class LoadingBehaviour<INPUT_DATA, DATA, STATE : MviState>(
-		private val loadingObservables: Collection<Observable<out INPUT_DATA>>,
-		private val loadDataAction: (INPUT_DATA) -> Observable<out DATA>,
+data class LoadingBehaviour<INPUT_DATA, OUTPUT_DATA, STATE : MviState>(
+		private val triggers: Triggers<out INPUT_DATA>,
+		private val loadWorker: Worker<INPUT_DATA, out OUTPUT_DATA>,
 		private val cancelPrevious: Boolean,
-		private val showLoading: (INPUT_DATA) -> EitherEventOrReducer<STATE>,
-		private val showError: (Throwable) -> EitherEventOrReducer<STATE>,
-		private val showData: (DATA) -> EitherEventOrReducer<STATE>
+		private val loadingMessage: Messages<INPUT_DATA, STATE>,
+		private val errorMessage: Messages<Throwable, STATE>,
+		private val dataMessage: Messages<OUTPUT_DATA, STATE>
 ): MviBehaviour<STATE> {
 
-	override fun createObservable(): Observable<EitherEventOrReducer<STATE>> {
-		val merged = Observable.merge(loadingObservables)
+	override fun createObservable(): Observable<MviReactorMessage<STATE>> {
+		val merged = Observable.merge(triggers.observables)
 		if (cancelPrevious) {
 			return merged.switchMap { createLoadingObservable(it) }
 		}
 		return merged.flatMap { createLoadingObservable(it) }
 	}
 
-	private fun createLoadingObservable(inputData: INPUT_DATA): Observable<EitherEventOrReducer<STATE>> {
-		return loadDataAction.invoke(inputData)
-				.map { showData(it) }
-				.onErrorReturn { showError(it) }
-				.startWith(showLoading(inputData))
+	private fun createLoadingObservable(inputData: INPUT_DATA): Observable<MviReactorMessage<STATE>> {
+		return loadWorker.execute(inputData)
+				.map { dataMessage.applyData(it) }
+				.onErrorReturn { errorMessage.applyData(it) }
+				.startWith(loadingMessage.applyData(inputData))
 	}
 }

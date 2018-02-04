@@ -1,31 +1,33 @@
 package com.sumera.koreactor.ui.base
 
-import android.app.Activity
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import com.sumera.koreactor.lib.reactor.data.MviState
-import com.sumera.koreactor.lib.view.implementation.MviAppCompatActivity
+import com.sumera.koreactor.lib.view.implementation.MviAppCompatActivityDelegate
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasActivityInjector
+import dagger.android.support.HasSupportFragmentInjector
 import javax.inject.Inject
 
-abstract class BaseActivity<STATE> : MviAppCompatActivity<STATE>(), HasActivityInjector
+abstract class BaseActivity<STATE> : MviAppCompatActivityDelegate<STATE>(), HasSupportFragmentInjector
 		where STATE : MviState {
 
-	@Inject lateinit var activityInjector: DispatchingAndroidInjector<Activity>
+	@Inject lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
 
 	abstract protected val layoutRes: Int
 
 	override fun onCreate(savedInstanceState: Bundle?) {
-		AndroidInjection.inject(this);
+		AndroidInjection.inject(this)
 
 		super.onCreate(savedInstanceState)
 
-		setContentView(layoutRes)
+		if (layoutRes != 0) {
+			setContentView(layoutRes)
+		}
 	}
 
-	override fun activityInjector(): AndroidInjector<Activity> {
-		return activityInjector
+	override fun supportFragmentInjector(): AndroidInjector<Fragment> {
+		return fragmentInjector
 	}
 }

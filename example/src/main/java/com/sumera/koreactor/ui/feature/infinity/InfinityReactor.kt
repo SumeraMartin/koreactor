@@ -1,13 +1,25 @@
 package com.sumera.koreactor.ui.feature.todo
 
 import com.sumera.koreactor.data.ToDoItem
+import com.sumera.koreactor.lib.behaviour.ObservableWorker
 import com.sumera.koreactor.lib.behaviour.implementation.InfinityLoadingBehaviour
 import com.sumera.koreactor.lib.behaviour.implementation.LoadingListBehaviour
+import com.sumera.koreactor.lib.behaviour.messages
+import com.sumera.koreactor.lib.behaviour.triggers
 import com.sumera.koreactor.lib.reactor.MviReactor
 import com.sumera.koreactor.lib.reactor.data.MviAction
 import com.sumera.koreactor.lib.reactor.lifecycle.AttachState
 import com.sumera.koreactor.lib.util.extension.ofLifecycleType
-import com.sumera.koreactor.ui.feature.infinity.contract.*
+import com.sumera.koreactor.ui.feature.infinity.contract.AddNewData
+import com.sumera.koreactor.ui.feature.infinity.contract.NavigateToDetailEvent
+import com.sumera.koreactor.ui.feature.infinity.contract.OnItemClickedAction
+import com.sumera.koreactor.ui.feature.infinity.contract.OnRetryInfinityLoadingAction
+import com.sumera.koreactor.ui.feature.infinity.contract.OnRetryInitialAction
+import com.sumera.koreactor.ui.feature.infinity.contract.OnScrolledToBottomAction
+import com.sumera.koreactor.ui.feature.infinity.contract.ShowInfinityError
+import com.sumera.koreactor.ui.feature.infinity.contract.ShowInfinityLoading
+import com.sumera.koreactor.ui.feature.infinity.contract.ShowInitialError
+import com.sumera.koreactor.ui.feature.infinity.contract.ShowInitialLoading
 import com.sumera.koreactor.ui.feature.todo.contract.InfinityState
 import cz.muni.fi.pv256.movio2.uco_461464.injection.PerActivity
 import io.reactivex.Observable
@@ -41,23 +53,25 @@ class InfinityReactor @Inject constructor(
 				.withLatestFrom(stateObservable, BiFunction { _: OnScrolledToBottomAction, state:InfinityState -> state })
 				.filter { !it.isInfinityLoading && !it.isInfinityError }
 
-		LoadingListBehaviour(
-				loadingObservables = listOf(attachAction, retryInitialAction),
-				loadDataAction = { returnsSomeData(10, 0) },
+		LoadingListBehaviour<Any, ToDoItem, InfinityState>(
+				loadingTriggers = triggers(attachAction, retryInitialAction),
+				loadWorker = ObservableWorker{ returnsSomeData(10, 0) },
 				cancelPrevious = true,
-				showLoadingReducer = { ShowInitialLoading },
-				showErrorReducer = { ShowInitialError },
-				showDataReducer = { AddNewData(it) }
+				loadingMessage = messages({ ShowInitialLoading }),
+				errorMessage = messages({ ShowInitialError }),
+				emptyMessage = messages(),
+				dataMessage = messages({ AddNewData(it) })
 		).bindToView()
 
-		InfinityLoadingBehaviour(
-				startLoadingObservables = listOf(startLoadingNextDataAction, retryInfinityLoadingAction),
-				loadDataAction = { input, limit, offset -> returnsSomeData(limit, offset) },
+		InfinityLoadingBehaviour<Any, ToDoItem, InfinityState>(
+				triggers = triggers(startLoadingNextDataAction, retryInfinityLoadingAction),
+				loadWorker = ObservableWorker({ input -> returnsSomeData(input.limit, input.offset) }),
 				limit = 10,
-				offset = 10,
-				showLoadingReducer = { ShowInfinityLoading },
-				showErrorReducer = { ShowInfinityError },
-				showDataReducer = { AddNewData(it) }
+				initialOffset = 10,
+				loadingMessage = messages({ ShowInfinityLoading }),
+				completeMessage = messages(),
+				errorMessage = messages({ ShowInfinityError }),
+				dataMessage = messages({ AddNewData(it) })
 		).bindToView()
 
 		itemClickedAction

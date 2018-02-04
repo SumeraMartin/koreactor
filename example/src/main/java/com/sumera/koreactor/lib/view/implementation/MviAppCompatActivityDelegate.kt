@@ -9,76 +9,75 @@ import com.sumera.koreactor.lib.reactor.MviReactor
 import com.sumera.koreactor.lib.reactor.data.MviAction
 import com.sumera.koreactor.lib.reactor.data.MviState
 import com.sumera.koreactor.lib.view.MviBindableView
+import com.sumera.koreactor.lib.view.delegate.MviReactorDelegate
 import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.plusAssign
 
-abstract class MviAppCompatActivity<STATE : MviState> : AppCompatActivity(), MviBindableView<STATE> {
+abstract class MviAppCompatActivityDelegate<STATE : MviState> : AppCompatActivity(), MviBindableView<STATE> {
 
-	abstract protected val reactor: MviReactor<STATE>
+	abstract fun createReactor(): MviReactor<STATE>
 
-	private val stateDisposables = CompositeDisposable()
-
-	private val eventDisposables = CompositeDisposable()
+	private val reactorDelegate = MviReactorDelegate<STATE>()
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 
-		reactor.setBindableView(this)
-		reactor.onCreate(savedInstanceState == null)
+		reactorDelegate.initialize(createReactor(), this)
+		reactorDelegate.onCreate(savedInstanceState)
 	}
 
 	override fun onStart() {
 		super.onStart()
 
-		reactor.onStart()
+		reactorDelegate.onStart()
 	}
 
 	override fun onResume() {
 		super.onResume()
 
-		reactor.onResume()
+		reactorDelegate.onResume()
 	}
 
 	override fun onPause() {
 		super.onPause()
 
-		reactor.onPause()
+		reactorDelegate.onPause()
 	}
 
 	override fun onStop() {
 		super.onStop()
 
-		reactor.onStop()
+		reactorDelegate.onStop()
 	}
 
 	override fun onDestroy() {
-		reactor.onDestroy(this)
+		reactorDelegate.onDestroy(this)
 
 		super.onDestroy()
 	}
 
-	override fun unbindFromState() {
-		stateDisposables.clear()
+	override fun onSaveInstanceState(outState: Bundle) {
+		reactorDelegate.onSaveInstanceState(outState)
+
+		super.onSaveInstanceState(outState)
 	}
 
-	override fun unbindFromEvents() {
-		eventDisposables.clear()
-	}
-
-	protected fun <VIEW_MODEL : ViewModel> getReactor(factory: ViewModelProvider.Factory, viewModel: Class<VIEW_MODEL>): VIEW_MODEL {
-		return ViewModelProviders.of(this, factory).get<VIEW_MODEL>(viewModel)
+	protected fun sendAction(action: MviAction<STATE>) {
+		reactorDelegate.sendAction(action)
 	}
 
 	protected fun Observable<out MviAction<STATE>>.bindToReactor() {
-		reactor.bindAction(this)
+		reactorDelegate.bindActionObservable(this)
 	}
 
 	protected fun <VALUE> Observable<VALUE>.observeState(action: (VALUE) -> (Unit)) {
-		stateDisposables += subscribe { value -> action(value) }
+		reactorDelegate.bindStateObservable(this, action)
 	}
 
 	protected fun <VALUE> Observable<VALUE>.observeEvent(action: (VALUE) -> (Unit)) {
-		eventDisposables += subscribe { value -> action(value) }
+		reactorDelegate.bindEventsObservable(this, action)
+	}
+
+	protected fun <REACTOR : ViewModel> getReactor(factory: ViewModelProvider.Factory, viewModel: Class<REACTOR>): REACTOR {
+		return ViewModelProviders.of(this, factory).get<REACTOR>(viewModel)
 	}
 }

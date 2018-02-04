@@ -1,15 +1,15 @@
 package com.sumera.koreactor.lib
 
 import com.sumera.koreactor.lib.internal.extension.isViewStarted
+import com.sumera.koreactor.lib.reactor.data.MviEvent
 import com.sumera.koreactor.lib.reactor.data.MviState
-import com.sumera.koreactor.lib.reactor.data.event.MviEvent
 import com.sumera.koreactor.lib.reactor.lifecycle.LifecycleState
-import com.sumera.koreactor.lib.view.MviBindableView
+import com.sumera.koreactor.lib.view.MviBindableViewDelegate
 import io.reactivex.Observable
 import io.reactivex.observers.TestObserver
 import io.reactivex.subjects.PublishSubject
 
-class TestMviBindable<STATE : MviState> : MviBindableView<STATE> {
+class TestMviBindableDelegate<STATE : MviState> : MviBindableViewDelegate<STATE> {
 
 	companion object {
 		const val INVALID_VALUE = -1
@@ -51,6 +51,10 @@ class TestMviBindable<STATE : MviState> : MviBindableView<STATE> {
 	}
 
 	override fun unbindFromEvents() {
+		// Do nothing
+	}
+
+	override fun unbindActions() {
 		// Do nothing
 	}
 

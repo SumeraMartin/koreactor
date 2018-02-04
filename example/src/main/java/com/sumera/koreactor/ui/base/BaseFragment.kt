@@ -6,15 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.sumera.koreactor.lib.reactor.data.MviState
-import com.sumera.koreactor.lib.view.implementation.MviFragment
+import com.sumera.koreactor.lib.view.implementation.MviFragmentDelegate
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.AndroidSupportInjection
 import dagger.android.support.HasSupportFragmentInjector
 import javax.inject.Inject
 
-abstract class BaseFragment<STATE> : MviFragment<STATE>(), HasSupportFragmentInjector
-		where STATE : MviState {
+abstract class BaseFragment<STATE: MviState> : MviFragmentDelegate<STATE>(), HasSupportFragmentInjector {
 
 	@Inject lateinit var childFragmentInjector: DispatchingAndroidInjector<Fragment>
 
@@ -26,8 +25,11 @@ abstract class BaseFragment<STATE> : MviFragment<STATE>(), HasSupportFragmentInj
 		super.onCreate(savedInstanceState)
 	}
 
-	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-		return inflater.inflate(layoutRes, container, false)
+	override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+		if (layoutRes == 0) {
+			return super.onCreateView(inflater, container, savedInstanceState)
+		}
+		return inflater!!.inflate(layoutRes, container, false)
 	}
 
 	override fun supportFragmentInjector(): AndroidInjector<Fragment> {

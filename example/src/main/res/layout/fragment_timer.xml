@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+
+	<LinearLayout
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		android:layout_gravity="center">
+
+		<TextView
+			android:id="@+id/timer_countText"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center"
+			android:layout_marginBottom="16dp"
+			android:textSize="20dp"
+			android:text="0"/>
+
+		<LinearLayout
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			android:layout_gravity="center">
+
+			<Button
+				android:id="@+id/timer_reset"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"
+				android:layout_marginRight="8dp"
+				android:text="RESET"/>
+
+		</LinearLayout>
+
+	</LinearLayout>
+
+</FrameLayout>

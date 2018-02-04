@@ -4,14 +4,18 @@ import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import com.sumera.koreactor.R
 import com.sumera.koreactor.lib.reactor.MviReactor
-import com.sumera.koreactor.lib.reactor.data.event.MviEvent
+import com.sumera.koreactor.lib.reactor.data.MviEvent
 import com.sumera.koreactor.lib.util.data.asOptional
 import com.sumera.koreactor.lib.util.extension.getChange
 import com.sumera.koreactor.lib.util.extension.getTrue
 import com.sumera.koreactor.ui.base.BaseActivity
 import com.sumera.koreactor.ui.common.PlaceholderLayout
 import com.sumera.koreactor.ui.feature.infinity.adapter.InfinityAdapter
-import com.sumera.koreactor.ui.feature.infinity.contract.*
+import com.sumera.koreactor.ui.feature.infinity.contract.NavigateToDetailEvent
+import com.sumera.koreactor.ui.feature.infinity.contract.OnItemClickedAction
+import com.sumera.koreactor.ui.feature.infinity.contract.OnRetryInfinityLoadingAction
+import com.sumera.koreactor.ui.feature.infinity.contract.OnRetryInitialAction
+import com.sumera.koreactor.ui.feature.infinity.contract.OnScrolledToBottomAction
 import com.sumera.koreactor.ui.feature.todo.contract.InfinityState
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.activity_infinity.*
@@ -19,14 +23,15 @@ import javax.inject.Inject
 
 class InfinityActivity : BaseActivity<InfinityState>() {
 
-	@Inject lateinit var viewModelFactory: InfinityReactorFactory
+	@Inject lateinit var reactorFactory: InfinityReactorFactory
 	@Inject lateinit var adapter: InfinityAdapter
 
 	override val layoutRes: Int
 		get() = R.layout.activity_infinity
 
-	override val reactor: MviReactor<InfinityState>
-		get() = getReactor(viewModelFactory, InfinityReactor::class.java)
+	override fun createReactor(): MviReactor<InfinityState> {
+		return getReactor(reactorFactory, InfinityReactor::class.java)
+	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)

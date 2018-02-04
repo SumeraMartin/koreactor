@@ -7,9 +7,9 @@ import javax.inject.Provider
 
 @PerActivity
 class MainReactorFactory @Inject constructor(
-		private val viewModelProvider: Provider<MainReactor>
+		private val reactorProvider: Provider<MainReactor>
 ) : MviReactorFactory<MainReactor>() {
 
-	override val viewModel: MainReactor
-		get() = viewModelProvider.get()
+	override val reactor: MainReactor
+		get() = reactorProvider.get()
 }
