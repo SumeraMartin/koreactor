@@ -1,6 +1,6 @@
 package com.sumera.koreactor.ui.feature.simpleloading.contract
 
-import com.sumera.koreactor.reactor.data.MviState
+import com.sumera.koreactorlib.reactor.data.MviState
 
 data class SimpleLoadingState(
 		val isLoading: Boolean,

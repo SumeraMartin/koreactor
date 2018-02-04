@@ -1,15 +1,15 @@
 package com.sumera.koreactor.ui.feature.timer
 
-import com.sumera.koreactor.behaviour.implementation.TimerBehaviour
-import com.sumera.koreactor.behaviour.messages
-import com.sumera.koreactor.behaviour.triggers
-import com.sumera.koreactor.reactor.MviReactor
-import com.sumera.koreactor.reactor.data.MviAction
+import com.sumera.koreactor.injection.PerFragment
 import com.sumera.koreactor.ui.feature.timer.contract.IncrementCountReducer
 import com.sumera.koreactor.ui.feature.timer.contract.ResetCountReducer
 import com.sumera.koreactor.ui.feature.timer.contract.ResetTimerAction
 import com.sumera.koreactor.ui.feature.timer.contract.TimerState
-import com.sumera.koreactor.injection.PerFragment
+import com.sumera.koreactorlib.behaviour.implementation.TimerBehaviour
+import com.sumera.koreactorlib.behaviour.messages
+import com.sumera.koreactorlib.behaviour.triggers
+import com.sumera.koreactorlib.reactor.MviReactor
+import com.sumera.koreactorlib.reactor.data.MviAction
 import io.reactivex.Observable
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject

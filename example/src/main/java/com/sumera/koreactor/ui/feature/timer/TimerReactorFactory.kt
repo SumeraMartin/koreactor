@@ -1,7 +1,7 @@
 package com.sumera.koreactor.ui.feature.timer
 
-import com.sumera.koreactor.reactor.MviReactorFactory
 import com.sumera.koreactor.injection.PerFragment
+import com.sumera.koreactorlib.reactor.MviReactorFactory
 import javax.inject.Inject
 import javax.inject.Provider
 

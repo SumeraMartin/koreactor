@@ -1,14 +1,14 @@
 package com.sumera.koreactor.ui.feature.counter
 
-import com.sumera.koreactor.reactor.MviReactor
-import com.sumera.koreactor.reactor.data.MviAction
+import com.sumera.koreactorlib.reactor.MviReactor
+import com.sumera.koreactorlib.reactor.data.MviAction
 import com.sumera.koreactor.ui.feature.counter.contract.CounterState
 import com.sumera.koreactor.ui.feature.counter.contract.DecrementAction
 import com.sumera.koreactor.ui.feature.counter.contract.DecrementReducer
 import com.sumera.koreactor.ui.feature.counter.contract.IncrementAction
 import com.sumera.koreactor.ui.feature.counter.contract.IncrementReducer
 import com.sumera.koreactor.ui.feature.counter.contract.ShowNumberIsDivisibleByFiveToast
-import com.sumera.koreactor.util.extension.getChange
+import com.sumera.koreactorlib.util.extension.getChange
 import com.sumera.koreactor.injection.PerActivity
 import io.reactivex.Observable
 import javax.inject.Inject

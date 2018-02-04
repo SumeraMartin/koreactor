@@ -1,7 +1,6 @@
 package com.sumera.koreactor.ui.feature.infinity.contract
 
-import com.sumera.koreactor.reactor.data.MviEvent
-import com.sumera.koreactor.ui.feature.todo.contract.InfinityState
+import com.sumera.koreactorlib.reactor.data.MviEvent
 
 sealed class InfinityEvents : MviEvent<InfinityState>
 

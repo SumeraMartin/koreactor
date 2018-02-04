@@ -5,7 +5,7 @@ import com.sumera.koreactor.domain.GetSomeTextDataInteractor
 import com.sumera.koreactor.lib.ReactorTestRule
 import com.sumera.koreactor.lib.annotation.InitialLifecycleState
 import com.sumera.koreactor.lib.annotation.RunAfter
-import com.sumera.koreactor.reactor.MviReactor
+import com.sumera.koreactorlib.reactor.MviReactor
 import com.sumera.koreactor.ui.feature.simpleloading.SimpleLoadingReactor
 import com.sumera.koreactor.ui.feature.simpleloading.contract.RetryClicked
 import com.sumera.koreactor.ui.feature.simpleloading.contract.SimpleLoadingState

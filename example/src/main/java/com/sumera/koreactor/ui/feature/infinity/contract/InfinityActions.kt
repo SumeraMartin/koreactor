@@ -1,8 +1,7 @@
 package com.sumera.koreactor.ui.feature.infinity.contract
 
 import com.sumera.koreactor.data.ToDoItem
-import com.sumera.koreactor.reactor.data.MviAction
-import com.sumera.koreactor.ui.feature.todo.contract.InfinityState
+import com.sumera.koreactorlib.reactor.data.MviAction
 
 sealed class InfinityActions : MviAction<InfinityState>
 

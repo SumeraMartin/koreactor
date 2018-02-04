@@ -1,6 +1,6 @@
 package com.sumera.koreactor.ui.feature.timer.contract
 
-import com.sumera.koreactor.reactor.data.MviStateReducer
+import com.sumera.koreactorlib.reactor.data.MviStateReducer
 
 sealed class TimerReducer: MviStateReducer<TimerState>
 

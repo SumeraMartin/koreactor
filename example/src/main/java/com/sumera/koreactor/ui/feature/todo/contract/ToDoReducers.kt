@@ -1,7 +1,7 @@
 package com.sumera.koreactor.ui.feature.todo.contract
 
 import com.sumera.koreactor.data.ToDoItem
-import com.sumera.koreactor.reactor.data.MviStateReducer
+import com.sumera.koreactorlib.reactor.data.MviStateReducer
 import com.sumera.koreactor.tools.extensions.replaceWithPredicate
 import com.sumera.koreactor.ui.feature.todo.adapter.ToDoItemWrapper
 

@@ -4,8 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import com.jakewharton.rxbinding2.view.clicks
 import com.sumera.koreactor.R
-import com.sumera.koreactor.reactor.MviReactor
-import com.sumera.koreactor.reactor.data.MviEvent
+import com.sumera.koreactorlib.reactor.MviReactor
+import com.sumera.koreactorlib.reactor.data.MviEvent
 import com.sumera.koreactor.ui.base.BaseActivity
 import com.sumera.koreactor.ui.feature.counter.CounterActivity
 import com.sumera.koreactor.ui.feature.infinity.InfinityActivity

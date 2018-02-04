@@ -1,10 +1,10 @@
 package com.sumera.koreactor.lib
 
-import com.sumera.koreactor.internal.extension.isViewStarted
-import com.sumera.koreactor.reactor.data.MviEvent
-import com.sumera.koreactor.reactor.data.MviState
-import com.sumera.koreactor.reactor.lifecycle.LifecycleState
-import com.sumera.koreactor.view.MviBindableViewDelegate
+import com.sumera.koreactorlib.internal.extension.isViewStarted
+import com.sumera.koreactorlib.reactor.data.MviEvent
+import com.sumera.koreactorlib.reactor.data.MviState
+import com.sumera.koreactorlib.reactor.lifecycle.LifecycleState
+import com.sumera.koreactorlib.view.MviBindableViewDelegate
 import io.reactivex.Observable
 import io.reactivex.observers.TestObserver
 import io.reactivex.subjects.PublishSubject

@@ -3,7 +3,7 @@ package com.sumera.koreactor
 import com.sumera.koreactor.lib.ReactorTestRule
 import com.sumera.koreactor.lib.annotation.InitialLifecycleState
 import com.sumera.koreactor.lib.annotation.RunAfter
-import com.sumera.koreactor.reactor.MviReactor
+import com.sumera.koreactorlib.reactor.MviReactor
 import com.sumera.koreactor.ui.feature.counter.CounterReactor
 import com.sumera.koreactor.ui.feature.counter.contract.CounterState
 import com.sumera.koreactor.ui.feature.counter.contract.DecrementAction

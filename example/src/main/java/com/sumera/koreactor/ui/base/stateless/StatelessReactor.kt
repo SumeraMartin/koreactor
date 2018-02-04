@@ -1,8 +1,8 @@
 package com.sumera.koreactor.ui.base.stateless
 
 import com.sumera.koreactor.injection.PerActivity
-import com.sumera.koreactor.reactor.MviReactor
-import com.sumera.koreactor.reactor.data.MviAction
+import com.sumera.koreactorlib.reactor.MviReactor
+import com.sumera.koreactorlib.reactor.data.MviAction
 import io.reactivex.Observable
 import javax.inject.Inject
 

@@ -1,17 +1,17 @@
 package com.sumera.koreactor.lib
 
-import com.sumera.koreactor.reactor.MviReactor
-import com.sumera.koreactor.reactor.data.MviAction
-import com.sumera.koreactor.reactor.data.MviEvent
-import com.sumera.koreactor.reactor.data.MviState
-import com.sumera.koreactor.reactor.lifecycle.CreateState
-import com.sumera.koreactor.reactor.lifecycle.DestroyState
-import com.sumera.koreactor.reactor.lifecycle.DetachState
-import com.sumera.koreactor.reactor.lifecycle.LifecycleState
-import com.sumera.koreactor.reactor.lifecycle.PauseState
-import com.sumera.koreactor.reactor.lifecycle.ResumeState
-import com.sumera.koreactor.reactor.lifecycle.StartState
-import com.sumera.koreactor.reactor.lifecycle.StopState
+import com.sumera.koreactorlib.reactor.MviReactor
+import com.sumera.koreactorlib.reactor.data.MviAction
+import com.sumera.koreactorlib.reactor.data.MviEvent
+import com.sumera.koreactorlib.reactor.data.MviState
+import com.sumera.koreactorlib.reactor.lifecycle.CreateState
+import com.sumera.koreactorlib.reactor.lifecycle.DestroyState
+import com.sumera.koreactorlib.reactor.lifecycle.DetachState
+import com.sumera.koreactorlib.reactor.lifecycle.LifecycleState
+import com.sumera.koreactorlib.reactor.lifecycle.PauseState
+import com.sumera.koreactorlib.reactor.lifecycle.ResumeState
+import com.sumera.koreactorlib.reactor.lifecycle.StartState
+import com.sumera.koreactorlib.reactor.lifecycle.StopState
 import io.reactivex.schedulers.TestScheduler
 
 class ReactorTestWrapper<STATE : MviState>(

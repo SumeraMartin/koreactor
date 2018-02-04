@@ -1,6 +1,6 @@
 package com.sumera.koreactor.ui.feature.todo
 
-import com.sumera.koreactor.reactor.MviReactorFactory
+import com.sumera.koreactorlib.reactor.MviReactorFactory
 import com.sumera.koreactor.injection.PerActivity
 import javax.inject.Inject
 import javax.inject.Provider

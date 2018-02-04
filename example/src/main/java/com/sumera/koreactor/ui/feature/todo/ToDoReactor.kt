@@ -1,18 +1,18 @@
 package com.sumera.koreactor.ui.feature.todo
 
-import com.sumera.koreactor.behaviour.ObservableWorker
-import com.sumera.koreactor.behaviour.implementation.LoadingBehaviour
-import com.sumera.koreactor.behaviour.implementation.ShowTemporaryBehaviour
-import com.sumera.koreactor.behaviour.implementation.SwipeRefreshLoadingListBehaviour
-import com.sumera.koreactor.behaviour.messages
-import com.sumera.koreactor.behaviour.triggers
+import com.sumera.koreactorlib.behaviour.ObservableWorker
+import com.sumera.koreactorlib.behaviour.implementation.LoadingBehaviour
+import com.sumera.koreactorlib.behaviour.implementation.ShowTemporaryBehaviour
+import com.sumera.koreactorlib.behaviour.implementation.SwipeRefreshLoadingListBehaviour
+import com.sumera.koreactorlib.behaviour.messages
+import com.sumera.koreactorlib.behaviour.triggers
 import com.sumera.koreactor.data.ToDoItem
 import com.sumera.koreactor.domain.GetToDoItemsOnceInteractor
 import com.sumera.koreactor.domain.SaveToDoItemInteractor
 import com.sumera.koreactor.injection.PerActivity
-import com.sumera.koreactor.reactor.MviReactor
-import com.sumera.koreactor.reactor.data.MviAction
-import com.sumera.koreactor.reactor.lifecycle.AttachState
+import com.sumera.koreactorlib.reactor.MviReactor
+import com.sumera.koreactorlib.reactor.data.MviAction
+import com.sumera.koreactorlib.reactor.lifecycle.AttachState
 import com.sumera.koreactor.ui.feature.todo.adapter.ToDoItemWrapper
 import com.sumera.koreactor.ui.feature.todo.contract.AddToDoItem
 import com.sumera.koreactor.ui.feature.todo.contract.HideInfoMessage
@@ -33,7 +33,7 @@ import com.sumera.koreactor.ui.feature.todo.contract.ShowToastEverytime
 import com.sumera.koreactor.ui.feature.todo.contract.ShowToastOnlyVisible
 import com.sumera.koreactor.ui.feature.todo.contract.ShowToastOnlyVisibleBuffered
 import com.sumera.koreactor.ui.feature.todo.contract.ToDoState
-import com.sumera.koreactor.util.extension.ofLifecycleType
+import com.sumera.koreactorlib.util.extension.ofLifecycleType
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import java.util.concurrent.TimeUnit

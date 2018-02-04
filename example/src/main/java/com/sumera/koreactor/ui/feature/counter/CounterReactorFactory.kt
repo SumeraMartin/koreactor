@@ -1,7 +1,7 @@
 package com.sumera.koreactor.ui.feature.counter
 
-import com.sumera.koreactor.reactor.MviReactorFactory
 import com.sumera.koreactor.injection.PerActivity
+import com.sumera.koreactorlib.reactor.MviReactorFactory
 import javax.inject.Inject
 import javax.inject.Provider
 

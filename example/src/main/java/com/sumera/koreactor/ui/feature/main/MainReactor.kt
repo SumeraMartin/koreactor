@@ -1,7 +1,7 @@
 package com.sumera.koreactor.ui.feature.main
 
-import com.sumera.koreactor.reactor.MviReactor
-import com.sumera.koreactor.reactor.data.MviAction
+import com.sumera.koreactorlib.reactor.MviReactor
+import com.sumera.koreactorlib.reactor.data.MviAction
 import com.sumera.koreactor.ui.feature.main.contract.MainState
 import com.sumera.koreactor.ui.feature.main.contract.NavigateToCounterEvent
 import com.sumera.koreactor.ui.feature.main.contract.NavigateToInfinityEvent

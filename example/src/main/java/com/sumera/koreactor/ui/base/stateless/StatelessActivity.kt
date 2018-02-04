@@ -1,6 +1,6 @@
 package com.sumera.koreactor.ui.base.stateless
 
-import com.sumera.koreactor.reactor.MviReactor
+import com.sumera.koreactorlib.reactor.MviReactor
 import com.sumera.koreactor.ui.base.BaseActivity
 import javax.inject.Inject
 

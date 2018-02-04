@@ -3,8 +3,6 @@ package com.sumera.koreactor.ui.feature.infinity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import com.sumera.koreactor.R
-import com.sumera.koreactor.reactor.MviReactor
-import com.sumera.koreactor.reactor.data.MviEvent
 import com.sumera.koreactor.ui.base.BaseActivity
 import com.sumera.koreactor.ui.common.PlaceholderLayout
 import com.sumera.koreactor.ui.feature.infinity.adapter.InfinityAdapter
@@ -13,12 +11,12 @@ import com.sumera.koreactor.ui.feature.infinity.contract.OnItemClickedAction
 import com.sumera.koreactor.ui.feature.infinity.contract.OnRetryInfinityLoadingAction
 import com.sumera.koreactor.ui.feature.infinity.contract.OnRetryInitialAction
 import com.sumera.koreactor.ui.feature.infinity.contract.OnScrolledToBottomAction
-import com.sumera.koreactor.ui.feature.todo.InfinityReactor
-import com.sumera.koreactor.ui.feature.todo.InfinityReactorFactory
-import com.sumera.koreactor.ui.feature.todo.contract.InfinityState
-import com.sumera.koreactor.util.data.asOptional
-import com.sumera.koreactor.util.extension.getChange
-import com.sumera.koreactor.util.extension.getTrue
+import com.sumera.koreactor.ui.feature.infinity.contract.InfinityState
+import com.sumera.koreactorlib.util.data.asOptional
+import com.sumera.koreactorlib.util.extension.getChange
+import com.sumera.koreactorlib.util.extension.getTrue
+import com.sumera.koreactorlib.reactor.MviReactor
+import com.sumera.koreactorlib.reactor.data.MviEvent
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.activity_infinity.*
 import javax.inject.Inject

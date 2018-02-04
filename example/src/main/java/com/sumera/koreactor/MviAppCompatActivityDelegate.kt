@@ -5,11 +5,11 @@ import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import com.sumera.koreactor.reactor.MviReactor
-import com.sumera.koreactor.reactor.data.MviAction
-import com.sumera.koreactor.reactor.data.MviState
-import com.sumera.koreactor.view.MviBindableView
-import com.sumera.koreactor.view.delegate.MviReactorDelegate
+import com.sumera.koreactorlib.reactor.MviReactor
+import com.sumera.koreactorlib.reactor.data.MviAction
+import com.sumera.koreactorlib.reactor.data.MviState
+import com.sumera.koreactorlib.view.MviBindableView
+import com.sumera.koreactorlib.view.delegate.MviReactorDelegate
 import io.reactivex.Observable
 
 abstract class MviAppCompatActivityDelegate<STATE : MviState> : AppCompatActivity(), MviBindableView<STATE> {
