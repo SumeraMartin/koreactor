@@ -79,14 +79,14 @@ class InfinityAdapter @Inject constructor() : RecyclerView.Adapter<RecyclerView.
 		if (viewType == FOOTER_VIEW_TYPE) {
 			val view = LayoutInflater.from(parent!!.context).inflate(InfinityFooterViewHolder.layoutRes, parent, false)
 			holder = InfinityFooterViewHolder(view)
-			holder.onErrorClickListener = { position ->
+			holder.onErrorClickListener = { _ ->
 				retryInfinityLoadingSubject.onNext(Unit)
 			}
 		} else {
 			val view = LayoutInflater.from(parent!!.context).inflate(InifnityViewHolder.layoutRes, parent, false)
 			holder = InifnityViewHolder(view)
 			holder.onToDoItemClickListener = { position ->
-				dataInternal.get(position).let { clickSubject.onNext(it) }
+				dataInternal[position].let { clickSubject.onNext(it) }
 			}
 		}
 
