@@ -2,12 +2,12 @@ package com.sumera.koreactor.domain
 
 import com.sumera.koreactor.data.ToDoItem
 import com.sumera.koreactor.ui.feature.todo.adapter.ToDoItemWrapper
-import cz.muni.fi.pv256.movio2.uco_461464.domain.base.BaseInteractor
+import cz.muni.fi.pv256.movio2.uco_461464.domain.base.BaseObservableInteractor
 import io.reactivex.Observable
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class GetToDoItemsOnceInteractor @Inject constructor() : BaseInteractor<List<ToDoItemWrapper>>() {
+class GetToDoItemsOnceInteractor @Inject constructor() : BaseObservableInteractor<List<ToDoItemWrapper>>() {
 
 	override fun create(): Observable<List<ToDoItemWrapper>> {
 		return Observable.just(createData()).delay(3, TimeUnit.SECONDS)

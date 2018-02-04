@@ -4,7 +4,7 @@ import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 
-abstract class BaseInteractor<T> {
+abstract class BaseObservableInteractor<T> {
 
 	abstract fun create(): Observable<T>
 

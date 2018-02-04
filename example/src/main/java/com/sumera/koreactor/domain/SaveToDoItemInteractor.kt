@@ -1,12 +1,12 @@
 package com.sumera.koreactor.domain
 
 import com.sumera.koreactor.data.ToDoItem
-import cz.muni.fi.pv256.movio2.uco_461464.domain.base.BaseInteractor
+import cz.muni.fi.pv256.movio2.uco_461464.domain.base.BaseObservableInteractor
 import io.reactivex.Observable
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class SaveToDoItemInteractor @Inject constructor() : BaseInteractor<ToDoItem>() {
+class SaveToDoItemInteractor @Inject constructor() : BaseObservableInteractor<ToDoItem>() {
 
 	lateinit var item: ToDoItem
 
