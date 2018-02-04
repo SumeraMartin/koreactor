@@ -1,4 +1,4 @@
-package cz.muni.fi.pv256.movio2.uco_461464.injection
+package com.sumera.koreactor.injection.base
 
 import dagger.Module
 

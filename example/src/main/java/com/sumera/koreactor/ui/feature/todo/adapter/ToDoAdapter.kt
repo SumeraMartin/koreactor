@@ -3,7 +3,7 @@ package com.sumera.koreactor.ui.feature.todo.adapter
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import cz.muni.fi.pv256.movio2.uco_461464.injection.PerActivity
+import com.sumera.koreactor.injection.PerActivity
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject

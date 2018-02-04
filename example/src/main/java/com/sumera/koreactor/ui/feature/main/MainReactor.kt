@@ -1,7 +1,7 @@
 package com.sumera.koreactor.ui.feature.main
 
-import com.sumera.koreactor.lib.reactor.MviReactor
-import com.sumera.koreactor.lib.reactor.data.MviAction
+import com.sumera.koreactor.reactor.MviReactor
+import com.sumera.koreactor.reactor.data.MviAction
 import com.sumera.koreactor.ui.feature.main.contract.MainState
 import com.sumera.koreactor.ui.feature.main.contract.NavigateToCounterEvent
 import com.sumera.koreactor.ui.feature.main.contract.NavigateToInfinityEvent
@@ -13,7 +13,7 @@ import com.sumera.koreactor.ui.feature.main.contract.OnInfinityButtonClickAction
 import com.sumera.koreactor.ui.feature.main.contract.OnSimpleLoadingButtonClickAction
 import com.sumera.koreactor.ui.feature.main.contract.OnTimerButtonClickAction
 import com.sumera.koreactor.ui.feature.main.contract.OnToDoButtonClickAction
-import cz.muni.fi.pv256.movio2.uco_461464.injection.PerActivity
+import com.sumera.koreactor.injection.PerActivity
 import io.reactivex.Observable
 import javax.inject.Inject
 

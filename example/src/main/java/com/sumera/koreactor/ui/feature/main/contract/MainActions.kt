@@ -1,6 +1,6 @@
 package com.sumera.koreactor.ui.feature.main.contract
 
-import com.sumera.koreactor.lib.reactor.data.MviAction
+import com.sumera.koreactor.reactor.data.MviAction
 
 sealed class MainActions : MviAction<MainState>
 

@@ -1,18 +1,18 @@
 package com.sumera.koreactor.ui.feature.simpleloading
 
+import com.sumera.koreactor.behaviour.ObservableWorker
+import com.sumera.koreactor.behaviour.implementation.LoadingBehaviour
+import com.sumera.koreactor.behaviour.messages
+import com.sumera.koreactor.behaviour.triggers
 import com.sumera.koreactor.domain.GetSomeTextDataInteractor
-import com.sumera.koreactor.lib.behaviour.ObservableWorker
-import com.sumera.koreactor.lib.behaviour.implementation.LoadingBehaviour
-import com.sumera.koreactor.lib.behaviour.messages
-import com.sumera.koreactor.lib.behaviour.triggers
-import com.sumera.koreactor.lib.reactor.MviReactor
-import com.sumera.koreactor.lib.reactor.data.MviAction
+import com.sumera.koreactor.reactor.MviReactor
+import com.sumera.koreactor.reactor.data.MviAction
 import com.sumera.koreactor.ui.feature.simpleloading.contract.RetryClicked
 import com.sumera.koreactor.ui.feature.simpleloading.contract.ShowData
 import com.sumera.koreactor.ui.feature.simpleloading.contract.ShowError
 import com.sumera.koreactor.ui.feature.simpleloading.contract.ShowLoading
 import com.sumera.koreactor.ui.feature.simpleloading.contract.SimpleLoadingState
-import cz.muni.fi.pv256.movio2.uco_461464.injection.PerActivity
+import com.sumera.koreactor.injection.PerActivity
 import io.reactivex.Observable
 import javax.inject.Inject
 

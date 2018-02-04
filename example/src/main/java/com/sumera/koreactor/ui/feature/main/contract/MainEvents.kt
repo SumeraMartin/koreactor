@@ -1,6 +1,6 @@
 package com.sumera.koreactor.ui.feature.main.contract
 
-import com.sumera.koreactor.lib.reactor.data.MviEvent
+import com.sumera.koreactor.reactor.data.MviEvent
 
 sealed class MainEvent : MviEvent<MainState>
 

@@ -1,15 +1,14 @@
 package com.sumera.koreactor.ui.feature.todo
 
+import com.sumera.koreactor.behaviour.ObservableWorker
+import com.sumera.koreactor.behaviour.implementation.InfinityLoadingBehaviour
+import com.sumera.koreactor.behaviour.implementation.LoadingListBehaviour
+import com.sumera.koreactor.behaviour.messages
+import com.sumera.koreactor.behaviour.triggers
 import com.sumera.koreactor.data.ToDoItem
-import com.sumera.koreactor.lib.behaviour.ObservableWorker
-import com.sumera.koreactor.lib.behaviour.implementation.InfinityLoadingBehaviour
-import com.sumera.koreactor.lib.behaviour.implementation.LoadingListBehaviour
-import com.sumera.koreactor.lib.behaviour.messages
-import com.sumera.koreactor.lib.behaviour.triggers
-import com.sumera.koreactor.lib.reactor.MviReactor
-import com.sumera.koreactor.lib.reactor.data.MviAction
-import com.sumera.koreactor.lib.reactor.lifecycle.AttachState
-import com.sumera.koreactor.lib.util.extension.ofLifecycleType
+import com.sumera.koreactor.reactor.MviReactor
+import com.sumera.koreactor.reactor.data.MviAction
+import com.sumera.koreactor.reactor.lifecycle.AttachState
 import com.sumera.koreactor.ui.feature.infinity.contract.AddNewData
 import com.sumera.koreactor.ui.feature.infinity.contract.NavigateToDetailEvent
 import com.sumera.koreactor.ui.feature.infinity.contract.OnItemClickedAction
@@ -21,7 +20,8 @@ import com.sumera.koreactor.ui.feature.infinity.contract.ShowInfinityLoading
 import com.sumera.koreactor.ui.feature.infinity.contract.ShowInitialError
 import com.sumera.koreactor.ui.feature.infinity.contract.ShowInitialLoading
 import com.sumera.koreactor.ui.feature.todo.contract.InfinityState
-import cz.muni.fi.pv256.movio2.uco_461464.injection.PerActivity
+import com.sumera.koreactor.util.extension.ofLifecycleType
+import com.sumera.koreactor.injection.PerActivity
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import java.util.*

@@ -2,8 +2,8 @@ package com.sumera.koreactor.ui.base
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import com.sumera.koreactor.lib.reactor.data.MviState
-import com.sumera.koreactor.lib.view.implementation.MviAppCompatActivityDelegate
+import com.sumera.koreactor.MviAppCompatActivityDelegate
+import com.sumera.koreactor.reactor.data.MviState
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector

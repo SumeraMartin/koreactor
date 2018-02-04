@@ -2,8 +2,8 @@ package com.sumera.koreactor.lib
 
 import com.sumera.koreactor.lib.annotation.InitialLifecycleState
 import com.sumera.koreactor.lib.annotation.RunAfter
-import com.sumera.koreactor.lib.reactor.MviReactor
-import com.sumera.koreactor.lib.reactor.data.MviState
+import com.sumera.koreactor.reactor.MviReactor
+import com.sumera.koreactor.reactor.data.MviState
 import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.plugins.RxJavaPlugins
 import io.reactivex.schedulers.TestScheduler

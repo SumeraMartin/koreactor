@@ -1,6 +1,6 @@
 package com.sumera.koreactor.ui.feature.simpleloading.contract
 
-import com.sumera.koreactor.lib.reactor.data.MviStateReducer
+import com.sumera.koreactor.reactor.data.MviStateReducer
 
 sealed class SimpleLoadingReducer : MviStateReducer<SimpleLoadingState>
 

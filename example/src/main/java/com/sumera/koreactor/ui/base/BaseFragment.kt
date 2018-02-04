@@ -5,8 +5,8 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.sumera.koreactor.lib.reactor.data.MviState
-import com.sumera.koreactor.lib.view.implementation.MviFragmentDelegate
+import com.sumera.koreactor.MviFragmentDelegate
+import com.sumera.koreactor.reactor.data.MviState
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.AndroidSupportInjection

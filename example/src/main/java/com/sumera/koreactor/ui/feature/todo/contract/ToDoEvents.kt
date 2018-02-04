@@ -1,10 +1,10 @@
 package com.sumera.koreactor.ui.feature.todo.contract
 
-import com.sumera.koreactor.lib.reactor.data.EveryTimeEventBehaviour
-import com.sumera.koreactor.lib.reactor.data.MviEventBehaviour
-import com.sumera.koreactor.lib.reactor.data.VisibleBufferedEventBehaviour
-import com.sumera.koreactor.lib.reactor.data.VisibleNonBufferedEventBehaviour
-import com.sumera.koreactor.lib.reactor.data.MviEvent
+import com.sumera.koreactor.reactor.data.EveryTimeEventBehaviour
+import com.sumera.koreactor.reactor.data.MviEvent
+import com.sumera.koreactor.reactor.data.MviEventBehaviour
+import com.sumera.koreactor.reactor.data.VisibleBufferedEventBehaviour
+import com.sumera.koreactor.reactor.data.VisibleNonBufferedEventBehaviour
 
 sealed class ToDoEvents : MviEvent<ToDoState>
 

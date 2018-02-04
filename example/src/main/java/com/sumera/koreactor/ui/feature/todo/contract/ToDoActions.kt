@@ -1,6 +1,6 @@
 package com.sumera.koreactor.ui.feature.todo.contract
 
-import com.sumera.koreactor.lib.reactor.data.MviAction
+import com.sumera.koreactor.reactor.data.MviAction
 import com.sumera.koreactor.ui.feature.todo.adapter.ToDoItemWrapper
 
 sealed class ToDoActions : MviAction<ToDoState>

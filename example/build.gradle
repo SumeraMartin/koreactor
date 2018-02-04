@@ -32,9 +32,8 @@ dependencies {
     // RxJava extension
     implementation "com.github.akarnokd:rxjava2-extensions:$rootProject.ext.RX_JAVA_EXTENSIONS"
 
-
     // MVI
-//    implementation project(':lib')
+    implementation project(':lib')
 
     // SUPPORT
     implementation "com.android.support:design:$rootProject.ext.SUPPORT_LIBRARY_VERSION"
@@ -88,4 +87,5 @@ dependencies {
     // Test
     testImplementation 'junit:junit:4.12'
     testImplementation  "com.nhaarman:mockito-kotlin-kt1.1:1.5.0"
+    compile project(path: ':lib')
 }

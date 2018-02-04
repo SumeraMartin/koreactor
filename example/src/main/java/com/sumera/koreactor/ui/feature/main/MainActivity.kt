@@ -4,10 +4,11 @@ import android.content.Intent
 import android.os.Bundle
 import com.jakewharton.rxbinding2.view.clicks
 import com.sumera.koreactor.R
-import com.sumera.koreactor.lib.reactor.MviReactor
-import com.sumera.koreactor.lib.reactor.data.MviEvent
+import com.sumera.koreactor.reactor.MviReactor
+import com.sumera.koreactor.reactor.data.MviEvent
 import com.sumera.koreactor.ui.base.BaseActivity
 import com.sumera.koreactor.ui.feature.counter.CounterActivity
+import com.sumera.koreactor.ui.feature.infinity.InfinityActivity
 import com.sumera.koreactor.ui.feature.main.contract.MainState
 import com.sumera.koreactor.ui.feature.main.contract.NavigateToCounterEvent
 import com.sumera.koreactor.ui.feature.main.contract.NavigateToInfinityEvent
@@ -21,7 +22,6 @@ import com.sumera.koreactor.ui.feature.main.contract.OnTimerButtonClickAction
 import com.sumera.koreactor.ui.feature.main.contract.OnToDoButtonClickAction
 import com.sumera.koreactor.ui.feature.simpleloading.SimpleLoadingActivity
 import com.sumera.koreactor.ui.feature.timer.activity.TimerActivity
-import com.sumera.koreactor.ui.feature.todo.InfinityActivity
 import com.sumera.koreactor.ui.feature.todo.ToDoActivity
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.activity_main.*

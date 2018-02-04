@@ -2,15 +2,15 @@ package com.sumera.koreactor.ui.feature.simpleloading
 
 import android.os.Bundle
 import com.sumera.koreactor.R
-import com.sumera.koreactor.lib.reactor.MviReactor
-import com.sumera.koreactor.lib.util.data.asOptional
-import com.sumera.koreactor.lib.util.extension.getFalse
-import com.sumera.koreactor.lib.util.extension.getNotNull
-import com.sumera.koreactor.lib.util.extension.getTrue
+import com.sumera.koreactor.reactor.MviReactor
 import com.sumera.koreactor.ui.base.BaseActivity
 import com.sumera.koreactor.ui.common.PlaceholderLayout
 import com.sumera.koreactor.ui.feature.simpleloading.contract.RetryClicked
 import com.sumera.koreactor.ui.feature.simpleloading.contract.SimpleLoadingState
+import com.sumera.koreactor.util.data.asOptional
+import com.sumera.koreactor.util.extension.getFalse
+import com.sumera.koreactor.util.extension.getNotNull
+import com.sumera.koreactor.util.extension.getTrue
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.activity_simple_loading.*
 import javax.inject.Inject

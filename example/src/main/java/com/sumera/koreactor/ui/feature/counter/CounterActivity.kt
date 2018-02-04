@@ -4,14 +4,14 @@ import android.os.Bundle
 import android.widget.Toast
 import com.jakewharton.rxbinding2.view.clicks
 import com.sumera.koreactor.R
-import com.sumera.koreactor.lib.reactor.MviReactor
-import com.sumera.koreactor.lib.reactor.data.MviEvent
-import com.sumera.koreactor.lib.util.extension.getChange
+import com.sumera.koreactor.reactor.MviReactor
+import com.sumera.koreactor.reactor.data.MviEvent
 import com.sumera.koreactor.ui.base.BaseActivity
 import com.sumera.koreactor.ui.feature.counter.contract.CounterState
 import com.sumera.koreactor.ui.feature.counter.contract.DecrementAction
 import com.sumera.koreactor.ui.feature.counter.contract.IncrementAction
 import com.sumera.koreactor.ui.feature.counter.contract.ShowNumberIsDivisibleByFiveToast
+import com.sumera.koreactor.util.extension.getChange
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.activity_counter.*
 import javax.inject.Inject

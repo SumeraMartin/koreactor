@@ -7,11 +7,8 @@ import android.widget.Toast
 import com.jakewharton.rxbinding2.support.v4.widget.refreshes
 import com.jakewharton.rxbinding2.view.clicks
 import com.sumera.koreactor.R
-import com.sumera.koreactor.lib.reactor.MviReactor
-import com.sumera.koreactor.lib.reactor.data.MviEvent
-import com.sumera.koreactor.lib.util.data.asOptional
-import com.sumera.koreactor.lib.util.extension.getChange
-import com.sumera.koreactor.lib.util.extension.getTrue
+import com.sumera.koreactor.reactor.MviReactor
+import com.sumera.koreactor.reactor.data.MviEvent
 import com.sumera.koreactor.ui.base.BaseActivity
 import com.sumera.koreactor.ui.common.PlaceholderLayout
 import com.sumera.koreactor.ui.feature.todo.adapter.ToDoAdapter
@@ -25,6 +22,9 @@ import com.sumera.koreactor.ui.feature.todo.contract.ShowToastEverytime
 import com.sumera.koreactor.ui.feature.todo.contract.ShowToastOnlyVisible
 import com.sumera.koreactor.ui.feature.todo.contract.ShowToastOnlyVisibleBuffered
 import com.sumera.koreactor.ui.feature.todo.contract.ToDoState
+import com.sumera.koreactor.util.data.asOptional
+import com.sumera.koreactor.util.extension.getChange
+import com.sumera.koreactor.util.extension.getTrue
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.activity_todo.*
 import javax.inject.Inject

@@ -1,7 +1,7 @@
 package com.sumera.koreactor.ui.feature.todo.contract
 
 import com.sumera.koreactor.data.ToDoItem
-import com.sumera.koreactor.lib.reactor.data.MviState
+import com.sumera.koreactor.reactor.data.MviState
 
 data class InfinityState(
 		val isInitialLoading: Boolean,

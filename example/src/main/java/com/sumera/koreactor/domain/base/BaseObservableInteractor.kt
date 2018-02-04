@@ -1,4 +1,4 @@
-package cz.muni.fi.pv256.movio2.uco_461464.domain.base
+package com.sumera.koreactor.domain.base
 
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers

@@ -4,11 +4,11 @@ import android.os.Bundle
 import android.view.View
 import com.jakewharton.rxbinding2.view.clicks
 import com.sumera.koreactor.R
-import com.sumera.koreactor.lib.reactor.MviReactor
-import com.sumera.koreactor.lib.util.extension.getChange
+import com.sumera.koreactor.reactor.MviReactor
 import com.sumera.koreactor.ui.base.BaseFragment
 import com.sumera.koreactor.ui.feature.timer.contract.ResetTimerAction
 import com.sumera.koreactor.ui.feature.timer.contract.TimerState
+import com.sumera.koreactor.util.extension.getChange
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_timer.*
 import javax.inject.Inject

@@ -1,18 +1,18 @@
 package com.sumera.koreactor.ui.feature.todo
 
+import com.sumera.koreactor.behaviour.ObservableWorker
+import com.sumera.koreactor.behaviour.implementation.LoadingBehaviour
+import com.sumera.koreactor.behaviour.implementation.ShowTemporaryBehaviour
+import com.sumera.koreactor.behaviour.implementation.SwipeRefreshLoadingListBehaviour
+import com.sumera.koreactor.behaviour.messages
+import com.sumera.koreactor.behaviour.triggers
 import com.sumera.koreactor.data.ToDoItem
 import com.sumera.koreactor.domain.GetToDoItemsOnceInteractor
 import com.sumera.koreactor.domain.SaveToDoItemInteractor
-import com.sumera.koreactor.lib.behaviour.ObservableWorker
-import com.sumera.koreactor.lib.behaviour.implementation.LoadingBehaviour
-import com.sumera.koreactor.lib.behaviour.implementation.ShowTemporaryBehaviour
-import com.sumera.koreactor.lib.behaviour.implementation.SwipeRefreshLoadingListBehaviour
-import com.sumera.koreactor.lib.behaviour.messages
-import com.sumera.koreactor.lib.behaviour.triggers
-import com.sumera.koreactor.lib.reactor.MviReactor
-import com.sumera.koreactor.lib.reactor.data.MviAction
-import com.sumera.koreactor.lib.reactor.lifecycle.AttachState
-import com.sumera.koreactor.lib.util.extension.ofLifecycleType
+import com.sumera.koreactor.injection.PerActivity
+import com.sumera.koreactor.reactor.MviReactor
+import com.sumera.koreactor.reactor.data.MviAction
+import com.sumera.koreactor.reactor.lifecycle.AttachState
 import com.sumera.koreactor.ui.feature.todo.adapter.ToDoItemWrapper
 import com.sumera.koreactor.ui.feature.todo.contract.AddToDoItem
 import com.sumera.koreactor.ui.feature.todo.contract.HideInfoMessage
@@ -33,7 +33,7 @@ import com.sumera.koreactor.ui.feature.todo.contract.ShowToastEverytime
 import com.sumera.koreactor.ui.feature.todo.contract.ShowToastOnlyVisible
 import com.sumera.koreactor.ui.feature.todo.contract.ShowToastOnlyVisibleBuffered
 import com.sumera.koreactor.ui.feature.todo.contract.ToDoState
-import cz.muni.fi.pv256.movio2.uco_461464.injection.PerActivity
+import com.sumera.koreactor.util.extension.ofLifecycleType
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import java.util.concurrent.TimeUnit
