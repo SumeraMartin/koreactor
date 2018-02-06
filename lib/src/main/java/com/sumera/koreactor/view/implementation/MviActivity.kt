@@ -4,8 +4,7 @@ import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.view.View
+import android.support.v7.app.AppCompatActivity
 import com.sumera.koreactor.reactor.MviReactor
 import com.sumera.koreactor.reactor.data.MviAction
 import com.sumera.koreactor.reactor.data.MviState
@@ -13,14 +12,14 @@ import com.sumera.koreactor.view.MviBindableView
 import com.sumera.koreactor.view.delegate.MviReactorDelegate
 import io.reactivex.Observable
 
-abstract class MviFragmentDelegate<STATE : MviState> : Fragment(), MviBindableView<STATE> {
+abstract class MviActivity<STATE : MviState> : AppCompatActivity(), MviBindableView<STATE> {
 
 	abstract fun createReactor(): MviReactor<STATE>
 
 	private val reactorDelegate = MviReactorDelegate<STATE>()
 
-	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-		super.onViewCreated(view, savedInstanceState)
+	override fun onCreate(savedInstanceState: Bundle?) {
+		super.onCreate(savedInstanceState)
 
 		reactorDelegate.initialize(createReactor(), this)
 		reactorDelegate.onCreate(savedInstanceState)

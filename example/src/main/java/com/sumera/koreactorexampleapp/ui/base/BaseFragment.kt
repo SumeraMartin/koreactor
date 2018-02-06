@@ -6,14 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.sumera.koreactor.reactor.data.MviState
-import com.sumera.koreactor.view.implementation.MviFragmentDelegate
+import com.sumera.koreactor.view.implementation.MviFragment
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.AndroidSupportInjection
 import dagger.android.support.HasSupportFragmentInjector
 import javax.inject.Inject
 
-abstract class BaseFragment<STATE: MviState> : MviFragmentDelegate<STATE>(), HasSupportFragmentInjector {
+abstract class BaseFragment<STATE : MviState> : MviFragment<STATE>(), HasSupportFragmentInjector {
 
 	@Inject lateinit var childFragmentInjector: DispatchingAndroidInjector<Fragment>
 
