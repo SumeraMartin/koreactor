@@ -19,7 +19,7 @@ abstract class MviFragmentDelegate<STATE : MviState> : Fragment(), MviBindableVi
 
 	private val reactorDelegate = MviReactorDelegate<STATE>()
 
-	override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
 
 		reactorDelegate.initialize(createReactor(), this)
