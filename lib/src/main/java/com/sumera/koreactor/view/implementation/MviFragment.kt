@@ -13,7 +13,7 @@ import com.sumera.koreactor.view.MviBindableView
 import com.sumera.koreactor.view.delegate.MviReactorDelegate
 import io.reactivex.Observable
 
-abstract class MviFragmentDelegate<STATE : MviState> : Fragment(), MviBindableView<STATE> {
+abstract class MviFragment<STATE : MviState> : Fragment(), MviBindableView<STATE> {
 
 	abstract fun createReactor(): MviReactor<STATE>
 
