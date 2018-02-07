@@ -29,7 +29,7 @@ task clean(type: Delete) {
 }
 
 ext {
-    SUPPORT_LIBRARY_VERSION = '26.1.0'
+    SUPPORT_LIBRARY_VERSION = '27.0.2'
     HAWK_VERSION = '2.0.1'
     RX_JAVA = '2.1.5'
     RX_JAVA_EXTENSIONS = '0.17.9'

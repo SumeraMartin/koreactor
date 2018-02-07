@@ -13,13 +13,13 @@ import com.sumera.koreactor.view.MviBindableView
 import com.sumera.koreactor.view.delegate.MviReactorDelegate
 import io.reactivex.Observable
 
-abstract class MviFragmentDelegate<STATE : MviState> : Fragment(), MviBindableView<STATE> {
+abstract class MviFragment<STATE : MviState> : Fragment(), MviBindableView<STATE> {
 
 	abstract fun createReactor(): MviReactor<STATE>
 
 	private val reactorDelegate = MviReactorDelegate<STATE>()
 
-	override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
 
 		reactorDelegate.initialize(createReactor(), this)
