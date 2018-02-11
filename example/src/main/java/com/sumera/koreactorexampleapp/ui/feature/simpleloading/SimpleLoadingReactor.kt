@@ -2,7 +2,7 @@ package com.sumera.koreactorexampleapp.ui.feature.simpleloading
 
 import com.sumera.koreactor.behaviour.implementation.LoadingBehaviour
 import com.sumera.koreactor.behaviour.messages
-import com.sumera.koreactor.behaviour.observable
+import com.sumera.koreactor.behaviour.single
 import com.sumera.koreactor.behaviour.triggers
 import com.sumera.koreactor.reactor.MviReactor
 import com.sumera.koreactor.reactor.data.MviAction
@@ -30,7 +30,7 @@ class SimpleLoadingReactor @Inject constructor(
 
 		LoadingBehaviour<Any, String, SimpleLoadingState>(
 				triggers = triggers(attachLifecycleObservable, retryClicks),
-				loadWorker = observable { dataLoader.execute() },
+				loadWorker = single { dataLoader.execute() },
 				cancelPrevious = true,
 				loadingMessage = messages({ ShowLoading }),
 				errorMessage = messages({ ShowError }),

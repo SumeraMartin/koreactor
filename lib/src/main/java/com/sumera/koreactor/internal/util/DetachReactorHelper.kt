@@ -13,7 +13,7 @@ object DetachReactorHelper {
 		val activity = fragment.activity ?: throw IllegalStateException("Fragment is not attached to activity " + fragment)
 
 		if (activity.isChangingConfigurations || activity.isFinishing) {
-			return false;
+			return false
 		}
 		return fragment.isRemoving
 	}

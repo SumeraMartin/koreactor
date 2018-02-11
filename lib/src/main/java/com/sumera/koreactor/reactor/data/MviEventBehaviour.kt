@@ -4,26 +4,26 @@ sealed class MviEventBehaviour {
 
 	abstract val isRequiredViewVisibility: Boolean
 
-	abstract val isBuffered: Boolean
+	abstract val isCached: Boolean
 }
 
-object VisibleBufferedEventBehaviour : MviEventBehaviour() {
+object RequireStartedStateCached : MviEventBehaviour() {
 
 	override val isRequiredViewVisibility = true
 
-	override val isBuffered = true
+	override val isCached = true
 }
 
-object VisibleNonBufferedEventBehaviour : MviEventBehaviour() {
+object RequireStartedStateNotCached : MviEventBehaviour() {
 
 	override val isRequiredViewVisibility = true
 
-	override val isBuffered = false
+	override val isCached = false
 }
 
-object EveryTimeEventBehaviour : MviEventBehaviour() {
+object DispatchedEveryTime : MviEventBehaviour() {
 
 	override val isRequiredViewVisibility = false
 
-	override val isBuffered = false
+	override val isCached = false
 }

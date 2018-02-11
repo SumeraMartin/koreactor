@@ -20,12 +20,10 @@ data class SwipeRefreshLoadingBehaviour<INPUT_DATA, OUTPUT_DATA, STATE : MviStat
 ): MviBehaviour<STATE> {
 
 	override fun createObservable(): Observable<MviReactorMessage<STATE>> {
-		val loadingActions = Observable
-				.merge(initialLoadingTriggers.observables)
+		val loadingActions =initialLoadingTriggers.merge()
 				.map { DataWithSwipeRefreshInfo(it, false) }
 
-		val swipeRefreshActions = Observable
-				.merge(swipeRefreshTriggers.observables)
+		val swipeRefreshActions = swipeRefreshTriggers.merge()
 				.map { DataWithSwipeRefreshInfo(it, true) }
 
 		val merged = Observable.merge(loadingActions, swipeRefreshActions)
@@ -37,7 +35,7 @@ data class SwipeRefreshLoadingBehaviour<INPUT_DATA, OUTPUT_DATA, STATE : MviStat
 	}
 
 	private fun createLoadingObservable(dataWithSwipeRefreshInfo: DataWithSwipeRefreshInfo<INPUT_DATA>): Observable<MviReactorMessage<STATE>> {
-		val loadMovies = loadWorker.execute(dataWithSwipeRefreshInfo.inputData)
+		val loadMovies = loadWorker.executeAsObservable(dataWithSwipeRefreshInfo.inputData)
 				.map { dataMessage.applyData(it) }
 				.onErrorReturn { errorMessage.applyData(it) }
 		if (dataWithSwipeRefreshInfo.isSwipeRefreshInput) {

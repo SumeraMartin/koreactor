@@ -8,8 +8,8 @@ import com.sumera.koreactor.reactor.data.MviState
 import io.reactivex.Observable
 import java.util.concurrent.TimeUnit
 
-data class ShowTemporaryBehaviour<INPUT_DATA, STATE : MviState>(
-        private val triggers: Triggers<INPUT_DATA>,
+data class TemporaryBehaviour<INPUT_DATA, STATE : MviState>(
+        private val triggers: Triggers<out INPUT_DATA>,
 		private val duration: Long,
 		private val timeUnit: TimeUnit,
 		private val cancelPrevious: Boolean,
@@ -18,7 +18,7 @@ data class ShowTemporaryBehaviour<INPUT_DATA, STATE : MviState>(
 ): MviBehaviour<STATE> {
 
 	override fun createObservable(): Observable<MviReactorMessage<STATE>> {
-		val merged = Observable.merge(triggers.observables)
+		val merged = triggers.merge()
 		if (cancelPrevious) {
 			return merged.switchMap { createTemporaryObservable(it) }
 		}

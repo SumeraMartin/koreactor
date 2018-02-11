@@ -31,7 +31,7 @@
 				android:layout_height="wrap_content"
 				android:layout_gravity="center"
 				android:layout_marginRight="8dp"
-				android:text="RESET"/>
+				android:text="Cancel"/>
 
 		</LinearLayout>
 

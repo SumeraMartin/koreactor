@@ -82,10 +82,9 @@ dependencies {
 
     // Logging
     implementation "com.jakewharton.timber:timber:$rootProject.ext.TIMBER"
-    testCompile 'org.testng:testng:6.9.6'
+    testImplementation 'org.testng:testng:6.9.6'
 
     // Test
     testImplementation 'junit:junit:4.12'
     testImplementation  "com.nhaarman:mockito-kotlin-kt1.1:1.5.0"
-    compile project(path: ':lib')
 }

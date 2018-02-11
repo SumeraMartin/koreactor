@@ -2,6 +2,7 @@ package com.sumera.koreactor.reactor.data
 
 import com.sumera.koreactor.internal.data.Either
 import com.sumera.koreactor.internal.data.EitherRight
+import com.sumera.koreactor.internal.data.EventOrReducer
 
 interface MviStateReducer<STATE : MviState> : EventOrReducer<STATE>, MviReactorMessage<STATE> {
 
@@ -10,7 +11,7 @@ interface MviStateReducer<STATE : MviState> : EventOrReducer<STATE>, MviReactorM
 
 	fun reduce(oldState: STATE) : STATE
 
-	override fun getMessages(): Collection<EventOrReducer<STATE>> {
+	override fun messages(): Collection<EventOrReducer<STATE>> {
 		return listOf(this)
 	}
 }

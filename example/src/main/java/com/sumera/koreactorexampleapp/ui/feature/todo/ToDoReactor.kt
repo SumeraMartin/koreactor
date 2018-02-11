@@ -2,17 +2,18 @@ package com.sumera.koreactorexampleapp.ui.feature.todo
 
 import com.sumera.koreactor.behaviour.ObservableWorker
 import com.sumera.koreactor.behaviour.implementation.LoadingBehaviour
-import com.sumera.koreactor.behaviour.implementation.ShowTemporaryBehaviour
 import com.sumera.koreactor.behaviour.implementation.SwipeRefreshLoadingListBehaviour
+import com.sumera.koreactor.behaviour.implementation.TemporaryBehaviour
 import com.sumera.koreactor.behaviour.messages
+import com.sumera.koreactor.behaviour.single
 import com.sumera.koreactor.behaviour.triggers
+import com.sumera.koreactor.reactor.MviReactor
+import com.sumera.koreactor.reactor.data.AttachState
+import com.sumera.koreactor.reactor.data.MviAction
 import com.sumera.koreactorexampleapp.data.ToDoItem
 import com.sumera.koreactorexampleapp.domain.GetToDoItemsOnceInteractor
 import com.sumera.koreactorexampleapp.domain.SaveToDoItemInteractor
 import com.sumera.koreactorexampleapp.injection.PerActivity
-import com.sumera.koreactor.reactor.MviReactor
-import com.sumera.koreactor.reactor.data.MviAction
-import com.sumera.koreactor.reactor.lifecycle.AttachState
 import com.sumera.koreactorexampleapp.ui.feature.todo.adapter.ToDoItemWrapper
 import com.sumera.koreactorexampleapp.ui.feature.todo.contract.AddToDoItem
 import com.sumera.koreactorexampleapp.ui.feature.todo.contract.HideInfoMessage
@@ -33,7 +34,6 @@ import com.sumera.koreactorexampleapp.ui.feature.todo.contract.ShowToastEverytim
 import com.sumera.koreactorexampleapp.ui.feature.todo.contract.ShowToastOnlyVisible
 import com.sumera.koreactorexampleapp.ui.feature.todo.contract.ShowToastOnlyVisibleBuffered
 import com.sumera.koreactorexampleapp.ui.feature.todo.contract.ToDoState
-import com.sumera.koreactor.util.extension.ofLifecycleType
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import java.util.concurrent.TimeUnit
@@ -81,7 +81,7 @@ class ToDoReactor @Inject constructor(
 				dataMessage = messages({ ShowData(it) })
 		).bindToView()
 
-		ShowTemporaryBehaviour<Any, ToDoState>(
+		TemporaryBehaviour<Any, ToDoState>(
 				triggers = triggers(showInfoAction),
 				duration = 3,
 				timeUnit = TimeUnit.SECONDS,
@@ -92,7 +92,7 @@ class ToDoReactor @Inject constructor(
 
 		LoadingBehaviour<ToDoItem, ToDoItem, ToDoState>(
 				triggers = triggers(itemClickedAction.map { it.toDoItemWrapper.toDoItem }),
-				loadWorker = ObservableWorker{ saveToDoItemInteractor.init(it).execute() },
+				loadWorker = single { saveToDoItemInteractor.init(it).execute() },
 				cancelPrevious = false,
 				loadingMessage = messages({ ShowToDoItemLoading(it.id) }),
 				errorMessage = messages({ ShowError }),

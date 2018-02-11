@@ -2,18 +2,17 @@ package com.sumera.koreactor.behaviour.implementation
 
 import com.sumera.koreactor.behaviour.Messages
 import com.sumera.koreactor.behaviour.MviBehaviour
+import com.sumera.koreactor.behaviour.SingleWorker
 import com.sumera.koreactor.behaviour.Triggers
-import com.sumera.koreactor.behaviour.Worker
 import com.sumera.koreactor.reactor.data.MviReactorMessage
 import com.sumera.koreactor.reactor.data.MviState
 import io.reactivex.Observable
 
 data class InfinityLoadingBehaviour<INPUT_DATA, OUTPUT_DATA, STATE : MviState>(
-		private val triggers: Triggers<out INPUT_DATA>,
-		private val loadWorker: Worker<LoadData<INPUT_DATA>, List<OUTPUT_DATA>>,
+		private val initialTriggers: Triggers<out INPUT_DATA>,
+		private val loadWorker: SingleWorker<LoadData<INPUT_DATA>, List<OUTPUT_DATA>>,
 		private val limit: Int,
 		private val initialOffset: Int,
-		private val cancelPrevious: Boolean = false,
 		private val loadingMessage: Messages<INPUT_DATA, STATE>,
 		private val errorMessage: Messages<Throwable, STATE>,
 		private val completeMessage: Messages<INPUT_DATA, STATE>,
@@ -25,15 +24,8 @@ data class InfinityLoadingBehaviour<INPUT_DATA, OUTPUT_DATA, STATE : MviState>(
 	private var isCompleted = false
 
 	override fun createObservable(): Observable<MviReactorMessage<STATE>> {
-		if (cancelPrevious) {
-			return Observable
-					.merge(triggers.observables)
-					.switchMap { createLoadingObservable(it) }
-		}
-
-		return Observable
-				.merge(triggers.observables)
-				.flatMap { createLoadingObservable(it) }
+		return initialTriggers.merge()
+				.switchMap { createLoadingObservable(it) }
 	}
 
 	private fun createLoadingObservable(inputData: INPUT_DATA): Observable<MviReactorMessage<STATE>> {
@@ -41,16 +33,16 @@ data class InfinityLoadingBehaviour<INPUT_DATA, OUTPUT_DATA, STATE : MviState>(
 			return Observable.empty()
 		}
 
-		return loadWorker.execute(LoadData(inputData, limit, lastOffset))
-				.doOnNext { lastOffset += limit}
-				.flatMap { data ->
-					val values = listOf(dataMessage.applyData(data))
-					if (data.size < limit) {
-						isCompleted = true
-						values.plus(completeMessage.applyData(inputData))
-					}
-					Observable.fromIterable(values)
-				}
+		return loadWorker.executeAsObservable(LoadData(inputData, limit, lastOffset))
+                .doOnNext { lastOffset += limit}
+                .flatMap { data ->
+                    val values = listOf(dataMessage.applyData(data))
+                    if (data.size < limit) {
+                        isCompleted = true
+                        values.plus(completeMessage.applyData(inputData))
+                    }
+                    Observable.fromIterable(values)
+                }
 				.onErrorReturn { error -> errorMessage.applyData(error) }
 				.startWith(loadingMessage.applyData(inputData))
 	}

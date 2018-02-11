@@ -1,14 +1,14 @@
 package com.sumera.koreactor.internal.util
 
-import com.sumera.koreactor.reactor.lifecycle.AttachState
-import com.sumera.koreactor.reactor.lifecycle.CreateState
-import com.sumera.koreactor.reactor.lifecycle.DestroyState
-import com.sumera.koreactor.reactor.lifecycle.DetachState
-import com.sumera.koreactor.reactor.lifecycle.LifecycleState
-import com.sumera.koreactor.reactor.lifecycle.PauseState
-import com.sumera.koreactor.reactor.lifecycle.ResumeState
-import com.sumera.koreactor.reactor.lifecycle.StartState
-import com.sumera.koreactor.reactor.lifecycle.StopState
+import com.sumera.koreactor.reactor.data.AttachState
+import com.sumera.koreactor.reactor.data.CreateState
+import com.sumera.koreactor.reactor.data.DestroyState
+import com.sumera.koreactor.reactor.data.DetachState
+import com.sumera.koreactor.reactor.data.LifecycleState
+import com.sumera.koreactor.reactor.data.PauseState
+import com.sumera.koreactor.reactor.data.ResumeState
+import com.sumera.koreactor.reactor.data.StartState
+import com.sumera.koreactor.reactor.data.StopState
 
 object LifecycleEventCorrectOrderValidator {
 
@@ -25,7 +25,7 @@ object LifecycleEventCorrectOrderValidator {
 			is PauseState -> current is StopState || current is ResumeState
 			is StopState -> current is DestroyState || current is StartState
 			is DestroyState -> current is CreateState || current is DetachState
-			is DetachState -> throw IllegalStateException("No lifecycle events are allowed after DetachEvent: " + current)
+			is DetachState -> false
 		}
 	}
 }

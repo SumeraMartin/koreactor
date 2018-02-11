@@ -6,5 +6,5 @@ import io.reactivex.Observable
 
 interface MviBehaviour<STATE : MviState> {
 
-	fun createObservable(): Observable<MviReactorMessage<STATE>>
+	fun createObservable(): Observable<out MviReactorMessage<STATE>>
 }

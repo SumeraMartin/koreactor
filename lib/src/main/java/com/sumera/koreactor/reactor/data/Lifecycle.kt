@@ -1,4 +1,4 @@
-package com.sumera.koreactor.reactor.lifecycle
+package com.sumera.koreactor.reactor.data
 
 sealed class LifecycleState {
 	override fun toString(): String {

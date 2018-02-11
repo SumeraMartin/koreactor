@@ -1,12 +1,12 @@
 package com.sumera.koreactorexampleapp.domain
 
 import com.sumera.koreactorexampleapp.data.ToDoItem
-import com.sumera.koreactorexampleapp.domain.base.BaseObservableInteractor
-import io.reactivex.Observable
+import com.sumera.koreactorexampleapp.domain.base.BaseSingleInteractor
+import io.reactivex.Single
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class SaveToDoItemInteractor @Inject constructor() : BaseObservableInteractor<ToDoItem>() {
+class SaveToDoItemInteractor @Inject constructor() : BaseSingleInteractor<ToDoItem>() {
 
 	lateinit var item: ToDoItem
 
@@ -15,9 +15,9 @@ class SaveToDoItemInteractor @Inject constructor() : BaseObservableInteractor<To
 		return this
 	}
 
-	override fun create(): Observable<ToDoItem> {
+	override fun create(): Single<ToDoItem> {
 		val executedItem = item
-		return Observable
+		return Single
 				.timer(5, TimeUnit.SECONDS)
 				.map { executedItem }
 	}

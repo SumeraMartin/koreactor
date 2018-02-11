@@ -7,10 +7,10 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.View
 import com.sumera.koreactor.reactor.MviReactor
+import com.sumera.koreactor.reactor.MviReactorDelegate
 import com.sumera.koreactor.reactor.data.MviAction
 import com.sumera.koreactor.reactor.data.MviState
 import com.sumera.koreactor.view.MviBindableView
-import com.sumera.koreactor.view.delegate.MviReactorDelegate
 import io.reactivex.Observable
 
 abstract class MviFragment<STATE : MviState> : Fragment(), MviBindableView<STATE> {

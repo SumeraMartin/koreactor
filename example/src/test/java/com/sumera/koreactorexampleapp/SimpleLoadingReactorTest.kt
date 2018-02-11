@@ -1,14 +1,15 @@
 package com.sumera.koreactorexampleapp
 
 import com.nhaarman.mockito_kotlin.whenever
+import com.sumera.koreactor.reactor.MviReactor
 import com.sumera.koreactorexampleapp.domain.GetSomeTextDataInteractor
 import com.sumera.koreactorexampleapp.lib.ReactorTestRule
 import com.sumera.koreactorexampleapp.lib.annotation.InitialLifecycleState
 import com.sumera.koreactorexampleapp.lib.annotation.RunAfter
-import com.sumera.koreactor.reactor.MviReactor
 import com.sumera.koreactorexampleapp.ui.feature.simpleloading.SimpleLoadingReactor
 import com.sumera.koreactorexampleapp.ui.feature.simpleloading.contract.RetryClicked
 import com.sumera.koreactorexampleapp.ui.feature.simpleloading.contract.SimpleLoadingState
+import io.reactivex.Single
 import io.reactivex.subjects.PublishSubject
 import org.junit.Rule
 import org.junit.Test
@@ -30,9 +31,8 @@ class SimpleLoadingReactorTest {
 		override fun createNewReactorInstance(): MviReactor<SimpleLoadingState> {
 			whenever(mockGetSomeTextDataInteractor.execute()).thenAnswer {
 				getSomeTextDataSubject = PublishSubject.create<String>()
-				return@thenAnswer getSomeTextDataSubject
+				return@thenAnswer Single.fromObservable(getSomeTextDataSubject.take(1))
 			}
-
 			return SimpleLoadingReactor(mockGetSomeTextDataInteractor)
 		}
 	}

@@ -1,10 +1,9 @@
-package com.sumera.koreactor.view.delegate
+package com.sumera.koreactor.reactor
 
 import android.app.Activity
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import com.sumera.koreactor.internal.util.DetachReactorHelper
-import com.sumera.koreactor.reactor.MviReactor
 import com.sumera.koreactor.reactor.data.MviAction
 import com.sumera.koreactor.reactor.data.MviEvent
 import com.sumera.koreactor.reactor.data.MviState

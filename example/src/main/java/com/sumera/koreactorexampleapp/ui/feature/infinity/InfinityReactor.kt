@@ -17,12 +17,13 @@ import com.sumera.koreactor.behaviour.ObservableWorker
 import com.sumera.koreactor.behaviour.implementation.InfinityLoadingBehaviour
 import com.sumera.koreactor.behaviour.implementation.LoadingListBehaviour
 import com.sumera.koreactor.behaviour.messages
+import com.sumera.koreactor.behaviour.single
 import com.sumera.koreactor.behaviour.triggers
 import com.sumera.koreactor.reactor.MviReactor
 import com.sumera.koreactor.reactor.data.MviAction
-import com.sumera.koreactor.reactor.lifecycle.AttachState
-import com.sumera.koreactor.util.extension.ofLifecycleType
+import com.sumera.koreactor.reactor.data.AttachState
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.functions.BiFunction
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -54,8 +55,8 @@ class InfinityReactor @Inject constructor(
 				.filter { !it.isInfinityLoading && !it.isInfinityError }
 
 		LoadingListBehaviour<Any, ToDoItem, InfinityState>(
-				loadingTriggers = triggers(attachAction, retryInitialAction),
-				loadWorker = ObservableWorker{ returnsSomeData(10, 0) },
+				triggers = triggers(attachAction, retryInitialAction),
+				loadWorker = single { returnsSomeData(10, 0) },
 				cancelPrevious = true,
 				loadingMessage = messages({ ShowInitialLoading }),
 				errorMessage = messages({ ShowInitialError }),
@@ -64,14 +65,14 @@ class InfinityReactor @Inject constructor(
 		).bindToView()
 
 		InfinityLoadingBehaviour<Any, ToDoItem, InfinityState>(
-				triggers = triggers(startLoadingNextDataAction, retryInfinityLoadingAction),
-				loadWorker = ObservableWorker({ input -> returnsSomeData(input.limit, input.offset) }),
+				initialTriggers = triggers(startLoadingNextDataAction, retryInfinityLoadingAction),
+				loadWorker = single { input -> returnsSomeData(input.limit, input.offset) },
 				limit = 10,
 				initialOffset = 10,
-				loadingMessage = messages({ ShowInfinityLoading }),
+				loadingMessage = messages { ShowInfinityLoading },
 				completeMessage = messages(),
-				errorMessage = messages({ ShowInfinityError }),
-				dataMessage = messages({ AddNewData(it) })
+				errorMessage = messages { ShowInfinityError },
+				dataMessage = messages { AddNewData(it) }
 		).bindToView()
 
 		itemClickedAction
@@ -79,8 +80,8 @@ class InfinityReactor @Inject constructor(
 				.bindToView()
 	}
 
-	private fun returnsSomeData(limit: Int, offset: Int): Observable<List<ToDoItem>> {
-		return Observable.fromCallable {
+	private fun returnsSomeData(limit: Int, offset: Int): Single<List<ToDoItem>> {
+		return Single.fromCallable {
 			var list = listOf<ToDoItem>()
 			if (offset > 50) {
 				for (i in offset..(offset + 3)) {
@@ -96,9 +97,9 @@ class InfinityReactor @Inject constructor(
 				.delay(5, TimeUnit.SECONDS)
 				.flatMap {
 					if (Random().nextInt(5) % 4 == 0) {
-						return@flatMap Observable.error<List<ToDoItem>>(IllegalStateException("Error"))
+						return@flatMap Single.error<List<ToDoItem>>(IllegalStateException("Error"))
 					}
-					return@flatMap Observable.just(it)
+					return@flatMap Single.just(it)
 				}
 	}
 

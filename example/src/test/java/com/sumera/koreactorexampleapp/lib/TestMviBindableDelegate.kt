@@ -3,7 +3,7 @@ package com.sumera.koreactorexampleapp.lib
 import com.sumera.koreactor.internal.extension.isViewStarted
 import com.sumera.koreactor.reactor.data.MviEvent
 import com.sumera.koreactor.reactor.data.MviState
-import com.sumera.koreactor.reactor.lifecycle.LifecycleState
+import com.sumera.koreactor.reactor.data.LifecycleState
 import com.sumera.koreactor.view.MviBindableViewDelegate
 import io.reactivex.Observable
 import io.reactivex.observers.TestObserver

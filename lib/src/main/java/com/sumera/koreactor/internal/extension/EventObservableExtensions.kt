@@ -1,9 +1,9 @@
 package com.sumera.koreactor.internal.extension
 
 import com.sumera.koreactor.internal.data.EventWithLifecycle
+import com.sumera.koreactor.reactor.data.LifecycleState
 import com.sumera.koreactor.reactor.data.MviEvent
 import com.sumera.koreactor.reactor.data.MviState
-import com.sumera.koreactor.reactor.lifecycle.LifecycleState
 import hu.akarnokd.rxjava2.operators.FlowableTransformers
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Observable
