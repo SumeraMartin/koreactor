@@ -14,9 +14,9 @@ data class ShowToastEverytime(val message: String) : MviEvent<ToDoState>() {
 }
 
 data class ShowToastOnlyVisible(val message: String) : ToDoEvents() {
-	override val eventBehaviour = RequireStartedStateCached
+	override val eventBehaviour = RequireStartedStateNotCached
 }
 
 data class ShowToastOnlyVisibleBuffered(val message: String) : ToDoEvents() {
-	override val eventBehaviour = RequireStartedStateNotCached
+	override val eventBehaviour = RequireStartedStateCached
 }
