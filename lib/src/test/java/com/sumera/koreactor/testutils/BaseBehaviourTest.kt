@@ -21,7 +21,7 @@ open class BaseBehaviourTest {
 
     data class Output(val id: String) : MviEvent<TestState>()
 
-    data class OutputList(val ids: List<String>) : MviEvent<TestState>()
+    data class OutputList(val ids: List<String>, val source: String = "") : MviEvent<TestState>()
 
     val scheduler: TestScheduler
         get() = reactorTest.scheduler
