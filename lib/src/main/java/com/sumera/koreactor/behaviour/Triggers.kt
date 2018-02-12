@@ -21,8 +21,16 @@ fun <DATA> triggers(vararg observables: Observable<out DATA>): Triggers<DATA> {
     return Triggers(Arrays.asList(*observables))
 }
 
+fun <DATA> triggers(observable: Observable<out DATA>): Triggers<DATA> {
+    return Triggers(Arrays.asList(observable))
+}
+
 fun <DATA> triggers(vararg singles: Single<DATA>): Triggers<DATA> {
     return Triggers(Arrays.asList(*singles).map { it.toObservable() })
+}
+
+fun <DATA> triggers(single: Single<DATA>): Triggers<DATA> {
+    return Triggers(Arrays.asList(single).map { it.toObservable() })
 }
 
 fun <DATA> triggers(): Triggers<DATA> {

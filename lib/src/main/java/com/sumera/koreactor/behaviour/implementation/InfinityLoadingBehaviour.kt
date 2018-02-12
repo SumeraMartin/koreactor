@@ -10,46 +10,64 @@ import io.reactivex.Observable
 
 data class InfinityLoadingBehaviour<INPUT_DATA, OUTPUT_DATA, STATE : MviState>(
 		private val initialTriggers: Triggers<out INPUT_DATA>,
+		private val loadMoreTriggers: Triggers<out INPUT_DATA>,
 		private val loadWorker: SingleWorker<LoadData<INPUT_DATA>, List<OUTPUT_DATA>>,
 		private val limit: Int,
 		private val initialOffset: Int,
-		private val loadingMessage: Messages<INPUT_DATA, STATE>,
-		private val errorMessage: Messages<Throwable, STATE>,
+		private val initialLoadingMessage: Messages<INPUT_DATA, STATE>,
+		private val loadingMoreMessage: Messages<INPUT_DATA, STATE>,
+		private val initialErrorMessage: Messages<Throwable, STATE>,
+		private val loadingMoreErrorMessage: Messages<Throwable, STATE>,
 		private val completeMessage: Messages<INPUT_DATA, STATE>,
-		private val dataMessage: Messages<List<OUTPUT_DATA>, STATE>
+		private val initialDataMessage: Messages<List<OUTPUT_DATA>, STATE>,
+		private val loadMoreDataMessage: Messages<List<OUTPUT_DATA>, STATE>
 ): MviBehaviour<STATE> {
-
-	private var lastOffset = initialOffset
-
-	private var isCompleted = false
 
 	override fun createObservable(): Observable<MviReactorMessage<STATE>> {
 		return initialTriggers.merge()
-				.switchMap { createLoadingObservable(it) }
+				.switchMap { inputData ->
+					var offset = this.initialOffset
+					var isCompleted = false
+					Observable.merge(Observable.just(inputData), loadMoreTriggers.merge())
+							.filter { !isCompleted }
+							.concatMap { input ->
+								val loadingObservable = loadWorker.executeAsObservable(LoadData(input, limit, offset))
+										.flatMap { data ->
+											var values = if (offset == initialOffset) {
+												listOf(initialDataMessage.applyData(data))
+											} else {
+												listOf(loadMoreDataMessage.applyData(data))
+											}
+
+											if (data.size < limit) {
+												isCompleted = true
+												values += completeMessage.applyData(input)
+											}
+											offset += data.size
+
+											Observable.fromIterable(values)
+										}
+										.onErrorReturn { error ->
+											if (offset == initialOffset) {
+												initialErrorMessage.applyData(error)
+											} else {
+												loadingMoreErrorMessage.applyData(error)
+											}
+										}
+								val startWithData = if (offset == initialOffset) {
+									initialLoadingMessage.applyData(input)
+								} else {
+									loadingMoreMessage.applyData(input)
+								}
+								loadingObservable
+										.startWith(startWithData)
+							}
+				}
 	}
 
-	private fun createLoadingObservable(inputData: INPUT_DATA): Observable<MviReactorMessage<STATE>> {
-		if (isCompleted) {
-			return Observable.empty()
-		}
-
-		return loadWorker.executeAsObservable(LoadData(inputData, limit, lastOffset))
-                .doOnNext { lastOffset += limit}
-                .flatMap { data ->
-                    val values = listOf(dataMessage.applyData(data))
-                    if (data.size < limit) {
-                        isCompleted = true
-                        values.plus(completeMessage.applyData(inputData))
-                    }
-                    Observable.fromIterable(values)
-                }
-				.onErrorReturn { error -> errorMessage.applyData(error) }
-				.startWith(loadingMessage.applyData(inputData))
-	}
-
-    data class LoadData<INPUT_DATA>(
-            var input: INPUT_DATA,
-            var limit: Int,
-            var offset: Int
-    )
+	data class LoadData<INPUT_DATA>(
+			var input: INPUT_DATA,
+			var limit: Int,
+			var offset: Int
+	)
 }
