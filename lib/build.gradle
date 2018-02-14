@@ -42,3 +42,12 @@ dependencies {
     testImplementation "com.nhaarman:mockito-kotlin-kt1.1:1.5.0"
     testImplementation 'io.kotlintest:kotlintest:2.0.7'
 }
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+artifacts {
+    archives sourcesJar
+}
