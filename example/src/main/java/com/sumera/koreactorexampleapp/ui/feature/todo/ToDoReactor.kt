@@ -2,9 +2,8 @@ package com.sumera.koreactorexampleapp.ui.feature.todo
 
 import com.sumera.koreactor.behaviour.ObservableWorker
 import com.sumera.koreactor.behaviour.implementation.LoadingBehaviour
-import com.sumera.koreactor.behaviour.implementation.SwipeRefreshLoadingListBehaviour
-import com.sumera.koreactor.behaviour.implementation.TemporaryBehaviour
-import com.sumera.koreactor.behaviour.messages
+import com.sumera.koreactor.behaviour.implementation.TimerBehaviour
+import com.sumera.koreactor.behaviour.dispatch
 import com.sumera.koreactor.behaviour.single
 import com.sumera.koreactor.behaviour.triggers
 import com.sumera.koreactor.reactor.MviReactor
@@ -74,29 +73,29 @@ class ToDoReactor @Inject constructor(
 				swipeRefreshTriggers = triggers(retryAction),
 				loadWorker = ObservableWorker{ getToDoItemsOnceInteractor.execute() },
 				cancelPrevious = true,
-				loadingMessage = messages({ ShowLoading }),
-				swipeRefreshMessage = messages({ ShowSwipeRefreshLoading }),
-				errorMessage = messages({ ShowError }),
-				emptyMessage = messages({ ShowEmpty }),
-				dataMessage = messages({ ShowData(it) })
+				loadingMessage = dispatch({ ShowLoading }),
+				swipeRefreshMessage = dispatch({ ShowSwipeRefreshLoading }),
+				errorMessage = dispatch({ ShowError }),
+				emptyMessage = dispatch({ ShowEmpty }),
+				dataMessage = dispatch({ ShowData(it) })
 		).bindToView()
 
-		TemporaryBehaviour<Any, ToDoState>(
+		TimerBehaviour<Any, ToDoState>(
 				triggers = triggers(showInfoAction),
 				duration = 3,
 				timeUnit = TimeUnit.SECONDS,
 				cancelPrevious = true,
-				startMessage = messages({ ShowInfoMessage("Item added " + it) }),
-				endMessage = messages({ HideInfoMessage })
+				onStart = dispatch({ ShowInfoMessage("Item added " + it) }),
+				onEnd = dispatch({ HideInfoMessage })
 		).bindToView()
 
 		LoadingBehaviour<ToDoItem, ToDoItem, ToDoState>(
 				triggers = triggers(itemClickedAction.map { it.toDoItemWrapper.toDoItem }),
 				loadWorker = single { saveToDoItemInteractor.init(it).execute() },
 				cancelPrevious = false,
-				loadingMessage = messages({ ShowToDoItemLoading(it.id) }),
-				errorMessage = messages({ ShowError }),
-				dataMessage = messages({ ShowToDoItemCompleted(it.id) })
+				onLoading = dispatch({ ShowToDoItemLoading(it.id) }),
+				onError = dispatch({ ShowError }),
+				onData = dispatch({ ShowToDoItemCompleted(it.id) })
 		).bindToView()
 
 		addItemAction

@@ -1,6 +1,6 @@
 package com.sumera.koreactor.behaviour.implementation
 
-import com.sumera.koreactor.behaviour.messages
+import com.sumera.koreactor.behaviour.dispatch
 import com.sumera.koreactor.behaviour.single
 import com.sumera.koreactor.behaviour.triggers
 import com.sumera.koreactor.testutils.BaseBehaviourTest
@@ -43,9 +43,9 @@ class LoadingBehaviourTest : BaseBehaviourTest() {
                 triggers = triggers(initialSubject),
                 loadWorker = single { firstSingleWorker },
                 cancelPrevious = true,
-                loadingMessage = messages({ Output(id = "Load " + it) }),
-                errorMessage = messages({ Output(id = "Error " + it.message) }),
-                dataMessage = messages({ Output(id = "Data " + it) })
+                onLoading = dispatch({ Output(id = "Load " + it) }),
+                onError = dispatch({ Output(id = "Error " + it.error.message) }),
+                onData = dispatch({ Output(id = "Data " + it) })
         ).createObservable()
 
         behaviour.subscribe(testObserver)
@@ -67,9 +67,9 @@ class LoadingBehaviourTest : BaseBehaviourTest() {
                 triggers = triggers(initialSubject),
                 loadWorker = single { firstSingleWorker },
                 cancelPrevious = true,
-                loadingMessage = messages({ Output(id = "Load " + it) }),
-                errorMessage = messages({ Output(id = "Error " + it.message) }),
-                dataMessage = messages({ Output(id = "Data " + it) })
+                onLoading = dispatch({ Output(id = "Load " + it) }),
+                onError = dispatch({ Output(id = "Error " + it.error.message) }),
+                onData = dispatch({ Output(id = "Data " + it) })
         ).createObservable()
 
         behaviour.subscribe(testObserver)
@@ -97,9 +97,9 @@ class LoadingBehaviourTest : BaseBehaviourTest() {
                     }
                 },
                 cancelPrevious = true,
-                loadingMessage = messages({ Output(id = "Load " + it) }),
-                errorMessage = messages({ Output(id = "Error " + it.message) }),
-                dataMessage = messages({ Output(id = "Data " + it) })
+                onLoading = dispatch({ Output(id = "Load " + it) }),
+                onError = dispatch({ Output(id = "Error " + it.error.message) }),
+                onData = dispatch({ Output(id = "Data " + it) })
         ).createObservable()
 
         behaviour.subscribe(testObserver)
@@ -134,9 +134,9 @@ class LoadingBehaviourTest : BaseBehaviourTest() {
                     }
                 },
                 cancelPrevious = true,
-                loadingMessage = messages({ Output(id = "Load " + it) }),
-                errorMessage = messages({ Output(id = "Error " + it.message) }),
-                dataMessage = messages({ Output(id = "Data " + it) })
+                onLoading = dispatch({ Output(id = "Load " + it) }),
+                onError = dispatch({ Output(id = "Error " + it.error.message) }),
+                onData = dispatch({ Output(id = "Data " + it) })
         ).createObservable()
 
         behaviour.subscribe(testObserver)
@@ -174,9 +174,9 @@ class LoadingBehaviourTest : BaseBehaviourTest() {
                     }
                 },
                 cancelPrevious = false,
-                loadingMessage = messages({ Output(id = "Load " + it) }),
-                errorMessage = messages({ Output(id = "Error " + it.message) }),
-                dataMessage = messages({ Output(id = "Data " + it) })
+                onLoading = dispatch({ Output(id = "Load " + it) }),
+                onError = dispatch({ Output(id = "Error " + it.error.message) }),
+                onData = dispatch({ Output(id = "Data " + it) })
         ).createObservable()
 
         behaviour.subscribe(testObserver)
@@ -214,9 +214,9 @@ class LoadingBehaviourTest : BaseBehaviourTest() {
                     }
                 },
                 cancelPrevious = false,
-                loadingMessage = messages({ Output(id = "Load " + it) }),
-                errorMessage = messages({ Output(id = "Error " + it.message) }),
-                dataMessage = messages({ Output(id = "Data " + it) })
+                onLoading = dispatch({ Output(id = "Load " + it) }),
+                onError = dispatch({ Output(id = "Error " + it.error.message) }),
+                onData = dispatch({ Output(id = "Data " + it) })
         ).createObservable()
 
         behaviour.subscribe(testObserver)

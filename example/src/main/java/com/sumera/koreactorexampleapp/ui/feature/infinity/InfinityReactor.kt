@@ -1,7 +1,7 @@
 package com.sumera.koreactorexampleapp.ui.feature.infinity
 
 import com.sumera.koreactor.behaviour.implementation.InfinityLoadingBehaviour
-import com.sumera.koreactor.behaviour.messages
+import com.sumera.koreactor.behaviour.dispatch
 import com.sumera.koreactor.behaviour.single
 import com.sumera.koreactor.behaviour.triggers
 import com.sumera.koreactor.reactor.MviReactor
@@ -61,13 +61,13 @@ class InfinityReactor @Inject constructor(
 				loadWorker = single { input -> returnsSomeData(input.limit, input.offset) },
 				limit = 10,
 				initialOffset = 0,
-				initialLoadingMessage = messages { ShowInitialLoading },
-				loadingMoreMessage = messages { ShowInfinityLoading },
-				initialErrorMessage = messages { ShowInitialError },
-				loadingMoreErrorMessage = messages { ShowInfinityError },
-				completeMessage = messages { ShowCompleted },
-				initialDataMessage = messages { SetNewData(it) },
-				loadMoreDataMessage = messages { AppendNewData(it) }
+				onInitialLoading = dispatch { ShowInitialLoading },
+				onLoadingMore = dispatch { ShowInfinityLoading },
+				onInitialError = dispatch { ShowInitialError },
+				onLoadingMoreError = dispatch { ShowInfinityError },
+				onComplete = dispatch { ShowCompleted },
+				onInitialData = dispatch { SetNewData(it) },
+				onLoadMoreData = dispatch { AppendNewData(it) }
 		).bindToView()
 
 		itemClickedAction

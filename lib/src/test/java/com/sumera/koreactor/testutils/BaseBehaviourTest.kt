@@ -38,4 +38,12 @@ open class BaseBehaviourTest {
     fun testMessage(vararg messages: MviReactorMessage<TestState>): MviReactorMessage<TestState> {
         return MessagesCollection(Arrays.asList(*messages))
     }
+
+    fun on(description: String, action: () -> Unit) {
+        action()
+    }
+
+    fun it(description: String, action: () -> Unit) {
+        action()
+    }
 }

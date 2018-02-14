@@ -92,7 +92,7 @@ class ToDoActivity : BaseActivity<ToDoState>() {
 				.getChange { it.isSwipeLoading }
 				.observeState { todo_swipeRefresh.isRefreshing = it }
 
-		// Show data
+		// Show triggerInput
 		stateObservable
 				.getChange { it.data.asOptional() }
 				.filter { it.value?.isNotEmpty() ?: false }

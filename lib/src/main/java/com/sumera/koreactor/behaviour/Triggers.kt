@@ -4,16 +4,26 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import java.util.*
 
-class Triggers<out DATA>(
+class Triggers<DATA>(
         private val observables: List<Observable<out DATA>>
 ) {
     fun merge(): Observable<out DATA> {
+        listOf<String>().map {  }
+
         return Observable.merge(observables)
                 .onErrorResumeNext({ error: Throwable ->
                     Observable.error<DATA>(
                             IllegalStateException("Triggers should not contain any errors", error)
                     )
                 })
+    }
+
+    fun <R> map(transform: (DATA) -> R): Triggers<R> {
+        return Triggers(observables.map { it.map { transform(it) } })
+    }
+
+    operator fun plus(another: Triggers<DATA>): Triggers<DATA> {
+        return Triggers(observables = this.observables + another.observables)
     }
 }
 

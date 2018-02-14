@@ -77,7 +77,7 @@ class InfinityActivity : BaseActivity<InfinityState>() {
 				.getChange { it.isInfinityError }
 				.observeState { adapter.setError(it) }
 
-		// Show data
+		// Show triggerInput
 		stateObservable
 				.getChange { it.data.asOptional() }
 				.filter { it.value?.isNotEmpty() ?: false }

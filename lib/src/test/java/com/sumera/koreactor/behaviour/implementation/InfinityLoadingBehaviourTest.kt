@@ -1,6 +1,6 @@
 package com.sumera.koreactor.behaviour.implementation
 
-import com.sumera.koreactor.behaviour.messages
+import com.sumera.koreactor.behaviour.dispatch
 import com.sumera.koreactor.behaviour.single
 import com.sumera.koreactor.behaviour.triggers
 import com.sumera.koreactor.reactor.data.MviReactorMessage
@@ -62,21 +62,21 @@ class InfinityLoadingBehaviourTest : BaseBehaviourTest() {
                 },
                 limit = 10,
                 initialOffset = 5,
-                initialDataMessage = messages(),
-                loadMoreDataMessage = messages(),
-                initialErrorMessage = messages(),
-                loadingMoreMessage = messages(),
-                loadingMoreErrorMessage = messages(),
-                initialLoadingMessage= messages(),
-                completeMessage = messages()
+                onInitialData = dispatch(),
+                onLoadMoreData = dispatch(),
+                onInitialError = dispatch(),
+                onLoadingMore = dispatch(),
+                onLoadingMoreError = dispatch(),
+                onInitialLoading = dispatch(),
+                onComplete = dispatch()
         ).createObservable()
 
         behaviour.subscribe(testObserver)
 
-        // Trigger initial input
+        // Trigger initial triggerInput
         initialSubject.onNext("in1")
 
-        // Assert correct input data
+        // Assert correct triggerInput triggerInput
         assertNotNull("Worker was not called", inputData)
         assertEquals(InfinityLoadingBehaviour.LoadData("in1", 10, 5), inputData)
     }
@@ -87,10 +87,10 @@ class InfinityLoadingBehaviourTest : BaseBehaviourTest() {
 
         behaviour.subscribe(testObserver)
 
-        // Trigger initial input
+        // Trigger initial triggerInput
         loadMoreSubject.onNext("in1")
 
-        // Assert ignored input
+        // Assert ignored triggerInput
         testObserver.assertValueCount(0)
     }
 
@@ -100,7 +100,7 @@ class InfinityLoadingBehaviourTest : BaseBehaviourTest() {
 
         behaviour.subscribe(testObserver)
 
-        // Trigger initial input
+        // Trigger initial triggerInput
         initialSubject.onNext("in1")
 
         // Check load message was emitted
@@ -110,7 +110,7 @@ class InfinityLoadingBehaviourTest : BaseBehaviourTest() {
         // Emit worker result
         firstWorkerSubject.onNext(listOf("out1_1", "out1_2"))
 
-        // Check data and complete messages were emitted
+        // Check triggerInput and complete dispatch were emitted
         testObserver.assertValueAt(1, testMessage(OutputList(listOf("out1_1", "out1_2"), "init")))
         testObserver.assertValueAt(2, testMessage(Output("Complete in1")))
         testObserver.assertValueCount(3)
@@ -122,7 +122,7 @@ class InfinityLoadingBehaviourTest : BaseBehaviourTest() {
 
         behaviour.subscribe(testObserver)
 
-        // Trigger initial input
+        // Trigger initial triggerInput
         initialSubject.onNext("in1")
 
         // Check load message was emitted
@@ -132,7 +132,7 @@ class InfinityLoadingBehaviourTest : BaseBehaviourTest() {
         // Emit worker result
         firstWorkerSubject.onError(testError)
 
-        // Check data and error messages were emitted
+        // Check triggerInput and error dispatch were emitted
         testObserver.assertValueAt(1, testMessage(Output("Error init TestError")))
         testObserver.assertValueCount(2)
     }
@@ -143,7 +143,7 @@ class InfinityLoadingBehaviourTest : BaseBehaviourTest() {
 
         behaviour.subscribe(testObserver)
 
-        // Trigger initial input
+        // Trigger initial triggerInput
         initialSubject.onNext("in1")
 
         // Check load message was emitted
@@ -153,7 +153,7 @@ class InfinityLoadingBehaviourTest : BaseBehaviourTest() {
         // Emit worker result
         firstWorkerSubject.onNext(listOf())
 
-        // Check data and complete messages were emitted
+        // Check triggerInput and complete dispatch were emitted
         testObserver.assertValueAt(1, testMessage(OutputList(listOf(), "init")))
         testObserver.assertValueAt(2, testMessage(Output("Complete in1")))
         testObserver.assertValueCount(3)
@@ -165,7 +165,7 @@ class InfinityLoadingBehaviourTest : BaseBehaviourTest() {
 
         behaviour.subscribe(testObserver)
 
-        // Trigger initial input
+        // Trigger initial triggerInput
         initialSubject.onNext("in1")
 
         // Check load message was emitted
@@ -175,11 +175,11 @@ class InfinityLoadingBehaviourTest : BaseBehaviourTest() {
         // Emit worker result
         firstWorkerSubject.onNext(listOf("out1_1", "out1_2"))
 
-        // Check data message was emitted
+        // Check triggerInput message was emitted
         testObserver.assertValueAt(1, testMessage(OutputList(listOf("out1_1", "out1_2"), "init")))
         testObserver.assertValueCount(2)
 
-        // Trigger load more input
+        // Trigger load more triggerInput
         loadMoreSubject.onNext("in2")
 
         // Check load message was emitted
@@ -189,7 +189,7 @@ class InfinityLoadingBehaviourTest : BaseBehaviourTest() {
         // Emit worker result
         secondWorkerSubject.onNext(listOf("out2_1"))
 
-        // Check data and complete messages were emitted
+        // Check triggerInput and complete dispatch were emitted
         testObserver.assertValueAt(3, testMessage(OutputList(listOf("out2_1"), "more")))
         testObserver.assertValueAt(4, testMessage(Output("Complete in2")))
         testObserver.assertValueCount(5)
@@ -202,7 +202,7 @@ class InfinityLoadingBehaviourTest : BaseBehaviourTest() {
 
         behaviour.subscribe(testObserver)
 
-        // Trigger initial input
+        // Trigger initial triggerInput
         initialSubject.onNext("in1")
 
         // Check correct loadData
@@ -215,11 +215,11 @@ class InfinityLoadingBehaviourTest : BaseBehaviourTest() {
         // Emit worker result
         firstWorkerSubject.onNext(listOf("out1_1", "out1_2"))
 
-        // Check data message was emitted
+        // Check triggerInput message was emitted
         testObserver.assertValueAt(1, testMessage(OutputList(listOf("out1_1", "out1_2"), "init")))
         testObserver.assertValueCount(2)
 
-        // Trigger load more input
+        // Trigger load more triggerInput
         loadMoreSubject.onNext("in2")
 
         // Check correct loadData
@@ -229,7 +229,7 @@ class InfinityLoadingBehaviourTest : BaseBehaviourTest() {
         testObserver.assertValueAt(2, testMessage(Output("Load more in2")))
         testObserver.assertValueCount(3)
 
-        // Trigger load more input
+        // Trigger load more triggerInput
         loadMoreSubject.onNext("in3")
 
         // Emit worker result
@@ -238,7 +238,7 @@ class InfinityLoadingBehaviourTest : BaseBehaviourTest() {
         // Check correct loadData
         assertEquals(InfinityLoadingBehaviour.LoadData("in3", 2, 4), lastLoadData)
 
-        // Check data and loadMore messages were emitted
+        // Check triggerInput and loadMore dispatch were emitted
         testObserver.assertValueAt(3, testMessage(OutputList(listOf("out2_1", "out2_2"), "more")))
         testObserver.assertValueAt(4, testMessage(Output("Load more in3")))
         testObserver.assertValueCount(5)
@@ -246,7 +246,7 @@ class InfinityLoadingBehaviourTest : BaseBehaviourTest() {
         // Emit worker result
         thirdWorkerSubject.onNext(listOf("out3_1"))
 
-        // Check data and complete messages were emitted
+        // Check triggerInput and complete dispatch were emitted
         testObserver.assertValueAt(5, testMessage(OutputList(listOf("out3_1"), "more")))
         testObserver.assertValueAt(6, testMessage(Output("Complete in3")))
         testObserver.assertValueCount(7)
@@ -259,7 +259,7 @@ class InfinityLoadingBehaviourTest : BaseBehaviourTest() {
 
         behaviour.subscribe(testObserver)
 
-        // Trigger initial input
+        // Trigger initial triggerInput
         initialSubject.onNext("in1")
 
         // Check correct loadData
@@ -272,18 +272,18 @@ class InfinityLoadingBehaviourTest : BaseBehaviourTest() {
         // Emit worker result
         firstWorkerSubject.onNext(listOf("out1_1", "out1_2"))
 
-        // Check data message was emitted
+        // Check triggerInput message was emitted
         testObserver.assertValueAt(1, testMessage(OutputList(listOf("out1_1", "out1_2"), "init")))
         testObserver.assertValueCount(2)
 
-        // Trigger load more input
+        // Trigger load more triggerInput
         loadMoreSubject.onNext("in2")
 
         // Check load message was emitted
         testObserver.assertValueAt(2, testMessage(Output("Load more in2")))
         testObserver.assertValueCount(3)
 
-        // Trigger load more input
+        // Trigger load more triggerInput
         loadMoreSubject.onNext("in3")
 
         // Check correct loadData
@@ -295,7 +295,7 @@ class InfinityLoadingBehaviourTest : BaseBehaviourTest() {
         // Check correct loadData
         assertEquals(InfinityLoadingBehaviour.LoadData("in3", 2, 2), lastLoadData)
 
-        // Check data and loadMore messages were emitted
+        // Check triggerInput and loadMore dispatch were emitted
         testObserver.assertValueAt(3, testMessage(Output("Error more TestError")))
         testObserver.assertValueAt(4, testMessage(Output("Load more in3")))
         testObserver.assertValueCount(5)
@@ -303,7 +303,7 @@ class InfinityLoadingBehaviourTest : BaseBehaviourTest() {
         // Emit worker result
         thirdWorkerSubject.onNext(listOf("out3_1"))
 
-        // Check data and complete messages were emitted
+        // Check triggerInput and complete dispatch were emitted
         testObserver.assertValueAt(5, testMessage(OutputList(listOf("out3_1"), "more")))
         testObserver.assertValueAt(6, testMessage(Output("Complete in3")))
         testObserver.assertValueCount(7)
@@ -316,7 +316,7 @@ class InfinityLoadingBehaviourTest : BaseBehaviourTest() {
 
         behaviour.subscribe(testObserver)
 
-        // Trigger initial input
+        // Trigger initial triggerInput
         initialSubject.onNext("in1")
 
         // Check correct loadData
@@ -329,11 +329,11 @@ class InfinityLoadingBehaviourTest : BaseBehaviourTest() {
         // Emit worker result
         firstWorkerSubject.onNext(listOf("out1_1", "out1_2"))
 
-        // Check data message was emitted
+        // Check triggerInput message was emitted
         testObserver.assertValueAt(1, testMessage(OutputList(listOf("out1_1", "out1_2"), "init")))
         testObserver.assertValueCount(2)
 
-        // Trigger load more input
+        // Trigger load more triggerInput
         loadMoreSubject.onNext("in2")
 
         // Check correct loadData
@@ -343,7 +343,7 @@ class InfinityLoadingBehaviourTest : BaseBehaviourTest() {
         testObserver.assertValueAt(2, testMessage(Output("Load more in2")))
         testObserver.assertValueCount(3)
 
-        // Trigger initial input
+        // Trigger initial triggerInput
         initialSubject.onNext("in1")
 
         // Emit worker result which should be ignored
@@ -371,13 +371,13 @@ class InfinityLoadingBehaviourTest : BaseBehaviourTest() {
                 loadWorker = single { firstSingleWorker() },
                 limit = limit,
                 initialOffset = offset,
-                initialDataMessage = messages { OutputList(ids = it, source = "init") },
-                loadMoreDataMessage = messages { OutputList(ids = it, source = "more") },
-                initialLoadingMessage = messages { Output(id = "Load init $it") },
-                loadingMoreMessage = messages { Output(id = "Load more $it") },
-                initialErrorMessage = messages { Output(id = "Error init ${it.message}") },
-                loadingMoreErrorMessage = messages { Output(id = "Error more ${it.message}") },
-                completeMessage = messages { Output(id = "Complete $it") }
+                onInitialData = dispatch { OutputList(ids = it.output, source = "init") },
+                onLoadMoreData = dispatch { OutputList(ids = it.output, source = "more") },
+                onInitialLoading = dispatch { Output(id = "Load init $it") },
+                onLoadingMore = dispatch { Output(id = "Load more $it") },
+                onInitialError = dispatch { Output(id = "Error init ${it.error.message}") },
+                onLoadingMoreError = dispatch { Output(id = "Error more ${it.error.message}") },
+                onComplete = dispatch { Output(id = "Complete $it") }
         ).createObservable()
     }
 
@@ -391,18 +391,18 @@ class InfinityLoadingBehaviourTest : BaseBehaviourTest() {
                         "in1" -> firstSingleWorker()
                         "in2" -> secondSingleWorker()
                         "in3" -> thirdSingleWorker()
-                        else -> throw IllegalStateException("unknown input in test")
+                        else -> throw IllegalStateException("unknown triggerInput in test")
                     }
                 },
                 limit = limit,
                 initialOffset = offset,
-                initialDataMessage = messages { OutputList(ids = it, source = "init") },
-                loadMoreDataMessage = messages { OutputList(ids = it, source = "more") },
-                initialLoadingMessage = messages { Output(id = "Load init $it") },
-                loadingMoreMessage = messages { Output(id = "Load more $it") },
-                initialErrorMessage = messages { Output(id = "Error init ${it.message}") },
-                loadingMoreErrorMessage = messages { Output(id = "Error more ${it.message}") },
-                completeMessage = messages { Output(id = "Complete $it") }
+                onInitialData = dispatch({ OutputList(ids = it.output, source = "init") }, { OutputList(ids = it.output, source = "init") }),
+                onLoadMoreData = dispatch({ OutputList(ids = it.output, source = "more") }),
+                onInitialLoading = dispatch { Output(id = "Load init $it") },
+                onLoadingMore = dispatch { Output(id = "Load more $it") },
+                onInitialError = dispatch { Output(id = "Error init ${it.error.message}") },
+                onLoadingMoreError = dispatch { Output(id = "Error more ${it.error.message}") },
+                onComplete = dispatch { Output(id = "Complete $it") }
         ).createObservable()
     }
 }

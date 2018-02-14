@@ -11,7 +11,7 @@ class MessagesTest {
 
     @Test
     fun messages_withAppliedData_returnCorectData() {
-        val messages = messages<String, TestState>(
+        val messages = dispatch<String, TestState>(
                 { TestReducer(it) },
                 { TestEvent(id = it, behaviour = DispatchedEveryTime)}
         )

@@ -1,8 +1,9 @@
 package com.sumera.koreactor.behaviour.implementation
 
-import com.sumera.koreactor.behaviour.messages
+import com.sumera.koreactor.behaviour.dispatch
 import com.sumera.koreactor.behaviour.triggers
 import com.sumera.koreactor.testutils.BaseBehaviourTest
+import io.reactivex.observers.TestObserver
 import io.reactivex.subjects.PublishSubject
 import org.junit.After
 import org.junit.Before
@@ -11,14 +12,26 @@ import java.util.concurrent.TimeUnit
 
 class TimerBehaviourTest : BaseBehaviourTest() {
 
-    lateinit var initialSubject: PublishSubject<Input>
+    lateinit var initialTrigger: PublishSubject<Input>
 
     lateinit var cancelSubject: PublishSubject<Input>
 
+    fun createBehaviour(cancelPrevious: Boolean) {
+        TimerBehaviour<Input, TestState>(
+                triggers = triggers(initialTrigger),
+                duration = 2,
+                timeUnit = TimeUnit.SECONDS,
+                cancelPrevious = cancelPrevious,
+                onStart = dispatch({ Output(id = "Start " + it.id) }),
+                onEnd = dispatch({ Output(id = "End " + it.id) })
+        ).createObservable().subscribe(testObserver)
+    }
+
     @Before
     fun before() {
-        initialSubject = PublishSubject.create()
+        initialTrigger = PublishSubject.create()
         cancelSubject = PublishSubject.create()
+        testObserver = TestObserver()
     }
 
     @After
@@ -28,176 +41,187 @@ class TimerBehaviourTest : BaseBehaviourTest() {
     }
 
     @Test
-    fun triggeredOnce_shouldStartEmitting() {
-        val behaviour = TimerBehaviour<TestState>(
-                initialTrigger = triggers(initialSubject),
-                duration = 1,
-                timeUnit = TimeUnit.SECONDS,
-                tickMessage = messages({ Output(id = it.toString()) })
-        ).createObservable()
+    fun `with single trigger action`() {
+        createBehaviour(true)
 
-        behaviour.subscribe(testObserver)
+        on("First triggered action") {
+            initialTrigger.onNext(Input("Test"))
 
-        initialSubject.onNext(Input("Test"))
+            it("dispatch start message") {
+                testObserver.assertValueCount(1)
+                testObserver.assertValueAt(0, testMessage(Output(id = "Start Test")))
+            }
+        }
 
-        testObserver.assertValueCount(0)
+        on("After one second") {
+            scheduler.advanceTimeBy(1, TimeUnit.SECONDS)
 
-        scheduler.advanceTimeBy(1, TimeUnit.SECONDS)
+            it("dispatch no new message") {
+                testObserver.assertValueCount(1)
+            }
+        }
 
-        testObserver.assertValueCount(1)
-        testObserver.assertValueAt(0, testMessage(Output(id = "0")))
+        on("After one second") {
+            scheduler.advanceTimeBy(1, TimeUnit.SECONDS)
 
-        scheduler.advanceTimeBy(1, TimeUnit.SECONDS)
-
-        testObserver.assertValueCount(2)
-        testObserver.assertValueAt(1, testMessage(Output(id = "1")))
+            it("dispatch end message") {
+                testObserver.assertValueCount(2)
+                testObserver.assertValueAt(1, testMessage(Output(id = "End Test")))
+            }
+        }
     }
 
     @Test
-    fun trigerredMultipleTimesWithoutMessage_shouldStartEmittingFromLastTrigger() {
-        val behaviour = TimerBehaviour<TestState>(
-                initialTrigger = triggers(initialSubject),
-                duration = 2,
-                timeUnit = TimeUnit.SECONDS,
-                tickMessage = messages({ Output(id = it.toString()) })
-        ).createObservable()
+    fun `with cancel previous and multiple trigger actions before end`() {
+        createBehaviour(true)
 
-        behaviour.subscribe(testObserver)
+        on("First time triggered") {
+            initialTrigger.onNext(Input("Test1"))
 
-        initialSubject.onNext(Input("Test1"))
+            it("Emits start") {
+                testObserver.assertValueCount(1)
+                testObserver.assertValueAt(0, testMessage(Output(id = "Start Test1")))
+            }
+        }
 
-        scheduler.advanceTimeBy(1, TimeUnit.SECONDS)
+        on("After on second") {
+            scheduler.advanceTimeBy(1, TimeUnit.SECONDS)
 
-        initialSubject.onNext(Input("Test2"))
+            it("no new dispatched message") {
+                testObserver.assertValueCount(1)
+            }
+        }
 
-        scheduler.advanceTimeBy(1, TimeUnit.SECONDS)
+        on("Second time triggered") {
+            initialTrigger.onNext(Input("Test2"))
 
-        testObserver.assertValueCount(0)
+            it("Dispatch another start event") {
+                testObserver.assertValueCount(2)
+                testObserver.assertValueAt(1, testMessage(Output(id = "Start Test2")))
+            }
+        }
 
-        scheduler.advanceTimeBy(1, TimeUnit.SECONDS)
+        on("After one second") {
+            scheduler.advanceTimeBy(1, TimeUnit.SECONDS)
 
-        testObserver.assertValueCount(1)
-        testObserver.assertValueAt(0, testMessage(Output(id = "0")))
+            it("Nothing new is emitted") {
+                testObserver.assertValueCount(2)
+            }
+        }
 
-        scheduler.advanceTimeBy(2, TimeUnit.SECONDS)
+        on("After one second") {
+            scheduler.advanceTimeBy(1, TimeUnit.SECONDS)
 
-        testObserver.assertValueCount(2)
-        testObserver.assertValueAt(1, testMessage(Output(id = "1")))
+            it("dispatch end message") {
+                testObserver.assertValueCount(3)
+                testObserver.assertValueAt(2, testMessage(Output(id = "End Test2")))
+            }
+        }
     }
 
     @Test
-    fun trigerredMultipleTimesWithMessage_shouldEmitOneFromFirstAndContinueWithSecond() {
-        val behaviour = TimerBehaviour<TestState>(
-                initialTrigger = triggers(initialSubject),
-                duration = 2,
-                timeUnit = TimeUnit.SECONDS,
-                tickMessage = messages({ Output(id = it.toString()) })
-        ).createObservable()
+    fun `with cancel previous and multiple trigger actions after end`() {
+        createBehaviour(true)
 
-        behaviour.subscribe(testObserver)
+        on("First time triggered") {
+            initialTrigger.onNext(Input("Test1"))
 
-        initialSubject.onNext(Input("Test1"))
+            it("dispatch start message") {
+                testObserver.assertValueCount(1)
+                testObserver.assertValueAt(0, testMessage(Output(id = "Start Test1")))
+            }
+        }
 
-        scheduler.advanceTimeBy(2, TimeUnit.SECONDS)
+        on("After two seconds") {
+            scheduler.advanceTimeBy(2, TimeUnit.SECONDS)
 
-        testObserver.assertValueCount(1)
-        testObserver.assertValueAt(0, testMessage(Output(id = "0")))
+            it("dispatch end message") {
+                testObserver.assertValueCount(2)
+                testObserver.assertValueAt(1, testMessage(Output(id = "End Test1")))
+            }
+        }
 
-        scheduler.advanceTimeBy(2, TimeUnit.SECONDS)
+        on("After ten seconds") {
+            scheduler.advanceTimeBy(10, TimeUnit.SECONDS)
 
-        testObserver.assertValueCount(2)
-        testObserver.assertValueAt(1, testMessage(Output(id = "1")))
+            it("dispatch nothing new") {
+                testObserver.assertValueCount(2)
+            }
+        }
 
-        scheduler.advanceTimeBy(1, TimeUnit.SECONDS)
+        on("Second time triggered") {
+            initialTrigger.onNext(Input("Test2"))
 
-        initialSubject.onNext(Input("Test2"))
+            it("dispatch start message") {
+                testObserver.assertValueCount(3)
+                testObserver.assertValueAt(2, testMessage(Output(id = "Start Test2")))
+            }
+        }
 
-        scheduler.advanceTimeBy(1, TimeUnit.SECONDS)
+        on("After two seconds") {
+            scheduler.advanceTimeBy(2, TimeUnit.SECONDS)
 
-        testObserver.assertValueCount(2)
+            it("dispatch end message") {
+                testObserver.assertValueCount(4)
+                testObserver.assertValueAt(3, testMessage(Output(id = "End Test2")))
+            }
+        }
 
-        scheduler.advanceTimeBy(1, TimeUnit.SECONDS)
+        on("After ten seconds") {
+            scheduler.advanceTimeBy(10, TimeUnit.SECONDS)
 
-        testObserver.assertValueCount(3)
-        testObserver.assertValueAt(2, testMessage(Output(id = "0")))
-
-        scheduler.advanceTimeBy(2, TimeUnit.SECONDS)
-
-        testObserver.assertValueCount(4)
-        testObserver.assertValueAt(3, testMessage(Output(id = "1")))
+            it("dispatch nothing new") {
+                testObserver.assertValueCount(4)
+            }
+        }
     }
 
     @Test
-    fun triggeredAndCancelled_shouldStopEmitting() {
-        val behaviour = TimerBehaviour<TestState>(
-                initialTrigger = triggers(initialSubject),
-                cancelTrigger = triggers(cancelSubject),
-                duration = 2,
-                timeUnit = TimeUnit.SECONDS,
-                tickMessage = messages({ Output(id = it.toString()) })
-        ).createObservable()
+    fun `without cancel previous and with multiple trigger actions before end`() {
+        createBehaviour(false)
 
-        behaviour.subscribe(testObserver)
+        on("First time triggered") {
+            initialTrigger.onNext(Input("Test1"))
 
-        initialSubject.onNext(Input("Test1"))
+            it("dispatch first start message") {
+                testObserver.assertValueCount(1)
+                testObserver.assertValueAt(0, testMessage(Output(id = "Start Test1")))
+            }
+        }
 
-        scheduler.advanceTimeBy(2, TimeUnit.SECONDS)
+        on("After one second") {
+            scheduler.advanceTimeBy(1, TimeUnit.SECONDS)
 
-        testObserver.assertValueCount(1)
-        testObserver.assertValueAt(0, testMessage(Output(id = "0")))
+            it("dispatch nothing new") {
+                testObserver.assertValueCount(1)
+            }
+        }
 
-        scheduler.advanceTimeBy(2, TimeUnit.SECONDS)
+        on("Second time triggered") {
+            initialTrigger.onNext(Input("Test2"))
 
-        testObserver.assertValueCount(2)
-        testObserver.assertValueAt(1, testMessage(Output(id = "1")))
+            it("dispatch second message") {
+                testObserver.assertValueCount(2)
+                testObserver.assertValueAt(1, testMessage(Output(id = "Start Test2")))
+            }
+        }
 
-        cancelSubject.onNext(Input("Test2"))
+        on("After one seconds") {
+            scheduler.advanceTimeBy(1, TimeUnit.SECONDS)
 
-        scheduler.advanceTimeBy(10, TimeUnit.SECONDS)
+            it("dispatch first end message") {
+                testObserver.assertValueCount(3)
+                testObserver.assertValueAt(2, testMessage(Output(id = "End Test1")))
+            }
+        }
 
-        testObserver.assertValueCount(2)
-    }
+        on("After one seconds") {
+            scheduler.advanceTimeBy(1, TimeUnit.SECONDS)
 
-    @Test
-    fun triggeredCancelledAndTrigerredAgain_shouldStopAndContinueEmitting() {
-        val behaviour = TimerBehaviour<TestState>(
-                initialTrigger = triggers(initialSubject),
-                cancelTrigger = triggers(cancelSubject),
-                duration = 2,
-                timeUnit = TimeUnit.SECONDS,
-                tickMessage = messages({ Output(id = it.toString()) })
-        ).createObservable()
-
-        behaviour.subscribe(testObserver)
-
-        initialSubject.onNext(Input("Test1"))
-
-        scheduler.advanceTimeBy(2, TimeUnit.SECONDS)
-
-        testObserver.assertValueCount(1)
-        testObserver.assertValueAt(0, testMessage(Output(id = "0")))
-
-        scheduler.advanceTimeBy(2, TimeUnit.SECONDS)
-
-        testObserver.assertValueCount(2)
-        testObserver.assertValueAt(1, testMessage(Output(id = "1")))
-
-        cancelSubject.onNext(Input("Test2"))
-
-        scheduler.advanceTimeBy(11, TimeUnit.SECONDS)
-
-        testObserver.assertValueCount(2)
-
-        initialSubject.onNext(Input("Test1"))
-
-        scheduler.advanceTimeBy(2, TimeUnit.SECONDS)
-
-        testObserver.assertValueCount(3)
-        testObserver.assertValueAt(2, testMessage(Output(id = "0")))
-
-        scheduler.advanceTimeBy(2, TimeUnit.SECONDS)
-
-        testObserver.assertValueCount(4)
-        testObserver.assertValueAt(3, testMessage(Output(id = "1")))
+            it("dispatch second end message") {
+                testObserver.assertValueCount(4)
+                testObserver.assertValueAt(3, testMessage(Output(id = "End Test2")))
+            }
+        }
     }
 }

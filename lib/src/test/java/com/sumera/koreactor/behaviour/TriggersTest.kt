@@ -79,4 +79,38 @@ class TriggersTest {
         testObserver.assertError { it is IllegalStateException }
         testObserver.assertTerminated()
     }
+
+    @Test
+    fun triggers_plusOperator_addTriggersTogether() {
+        val triggers1 = triggers<String>(Observable.just("1"), Observable.just("2"))
+        val triggers2 = triggers<String>(testSubject)
+
+        val joinedTriggers = triggers1 + triggers2
+        joinedTriggers.merge().subscribe(testObserver)
+
+        testSubject.onNext("3")
+        testSubject.onNext("4")
+
+        testObserver.assertValueAt(0, "1")
+        testObserver.assertValueAt(1, "2")
+        testObserver.assertValueAt(2, "3")
+        testObserver.assertValueAt(3, "4")
+        testObserver.assertValueCount(4)
+        testObserver.assertNoErrors()
+        testObserver.assertNotComplete()
+    }
+
+    @Test
+    fun triggers_mapOperator_transformTriggers() {
+        val triggers = triggers<Int>(Observable.just(1), Observable.just(2))
+
+        val mappedTriggers = triggers.map { it.toString() }
+        mappedTriggers.merge().subscribe(testObserver)
+
+        testObserver.assertValueAt(0, "1")
+        testObserver.assertValueAt(1, "2")
+        testObserver.assertValueCount(2)
+        testObserver.assertNoErrors()
+        testObserver.assertNotComplete()
+    }
 }

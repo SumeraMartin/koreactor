@@ -1,7 +1,7 @@
 package com.sumera.koreactorexampleapp.ui.feature.timer
 
-import com.sumera.koreactor.behaviour.implementation.TimerBehaviour
-import com.sumera.koreactor.behaviour.messages
+import com.sumera.koreactor.behaviour.dispatch
+import com.sumera.koreactor.behaviour.implementation.IntervalBehaviour
 import com.sumera.koreactor.behaviour.triggers
 import com.sumera.koreactor.reactor.MviReactor
 import com.sumera.koreactor.reactor.data.MviAction
@@ -28,12 +28,12 @@ class TimerReactor @Inject constructor() : MviReactor<TimerState>() {
                 .map { ResetCountReducer }
                 .bindToView()
 
-        TimerBehaviour<TimerState>(
-                initialTrigger = triggers(attachLifecycleObservable),
-                cancelTrigger = triggers(resetAction),
+        IntervalBehaviour<TimerState>(
+                triggers = triggers(attachLifecycleObservable),
+                cancelTriggers = triggers(resetAction),
                 duration = 1,
                 timeUnit = TimeUnit.SECONDS,
-                tickMessage = messages({ IncrementCountReducer })
+                onTick = dispatch { IncrementCountReducer }
         ).bindToView()
     }
 }
