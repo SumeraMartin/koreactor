@@ -3,6 +3,8 @@ package com.sumera.koreactor.behaviour.implementation
 import com.sumera.koreactor.behaviour.dispatch
 import com.sumera.koreactor.behaviour.triggers
 import com.sumera.koreactor.testutils.BaseBehaviourTest
+import com.sumera.koreactor.testutils.it
+import com.sumera.koreactor.testutils.on
 import io.reactivex.observers.TestObserver
 import io.reactivex.subjects.PublishSubject
 import org.junit.After
@@ -78,16 +80,16 @@ class TimerBehaviourTest : BaseBehaviourTest() {
         on("First time triggered") {
             initialTrigger.onNext(Input("Test1"))
 
-            it("Emits start") {
+            it("dispatch start message") {
                 testObserver.assertValueCount(1)
                 testObserver.assertValueAt(0, testMessage(Output(id = "Start Test1")))
             }
         }
 
-        on("After on second") {
+        on("After one second") {
             scheduler.advanceTimeBy(1, TimeUnit.SECONDS)
 
-            it("no new dispatched message") {
+            it("dispatch nothing new") {
                 testObserver.assertValueCount(1)
             }
         }
@@ -95,21 +97,21 @@ class TimerBehaviourTest : BaseBehaviourTest() {
         on("Second time triggered") {
             initialTrigger.onNext(Input("Test2"))
 
-            it("Dispatch another start event") {
+            it("dispatch another start message") {
                 testObserver.assertValueCount(2)
                 testObserver.assertValueAt(1, testMessage(Output(id = "Start Test2")))
             }
         }
 
-        on("After one second") {
+        on("After one seconds") {
             scheduler.advanceTimeBy(1, TimeUnit.SECONDS)
 
-            it("Nothing new is emitted") {
+            it("dispatch nothing new") {
                 testObserver.assertValueCount(2)
             }
         }
 
-        on("After one second") {
+        on("After one seconds=") {
             scheduler.advanceTimeBy(1, TimeUnit.SECONDS)
 
             it("dispatch end message") {
@@ -200,7 +202,7 @@ class TimerBehaviourTest : BaseBehaviourTest() {
         on("Second time triggered") {
             initialTrigger.onNext(Input("Test2"))
 
-            it("dispatch second message") {
+            it("dispatch second start message") {
                 testObserver.assertValueCount(2)
                 testObserver.assertValueAt(1, testMessage(Output(id = "Start Test2")))
             }

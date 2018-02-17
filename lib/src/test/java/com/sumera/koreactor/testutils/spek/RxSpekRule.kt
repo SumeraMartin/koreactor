@@ -1,4 +1,4 @@
-package com.sumera.koreactor.testutils
+package com.sumera.koreactor.testutils.spek
 
 import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.plugins.RxJavaPlugins
@@ -7,7 +7,7 @@ import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
 
-class RxTestRule : TestRule {
+class RxSpekRule : TestRule {
 
     val scheduler: TestScheduler
         get() = testScheduler

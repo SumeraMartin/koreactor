@@ -50,9 +50,7 @@ class CompletableWorker<in INPUT_DATA>(
 ): Worker<INPUT_DATA, Unit> {
 
     override fun executeAsObservable(data: INPUT_DATA): Observable<Unit> {
-        return action(data)
-                .toSingleDefault(Unit)
-                .toObservable()
+        return action(data).toSingleDefault(Unit).toObservable()
     }
 
     fun execute(data: INPUT_DATA): Completable {

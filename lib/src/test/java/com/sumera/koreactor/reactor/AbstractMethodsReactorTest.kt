@@ -26,7 +26,7 @@ class AbstractMethodsReactorTest {
     fun before() {
         reactor = TestMviReactor()
         view = TestMviBindableDelegate()
-        lifecycleObserver = TestObserverWithOrder(reactor.lifecycleTestObserver)
+        lifecycleObserver = reactor.lifecycleTestObserver
     }
 
     @Test

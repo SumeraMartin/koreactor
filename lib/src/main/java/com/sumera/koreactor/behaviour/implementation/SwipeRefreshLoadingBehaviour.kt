@@ -9,8 +9,6 @@ import com.sumera.koreactor.behaviour.Triggers
 import com.sumera.koreactor.behaviour.data.ErrorWithData
 import com.sumera.koreactor.behaviour.data.InputData
 import com.sumera.koreactor.behaviour.data.OutputData
-import com.sumera.koreactor.behaviour.dispatch
-import com.sumera.koreactor.behaviour.single
 import com.sumera.koreactor.reactor.data.MviReactorMessage
 import com.sumera.koreactor.reactor.data.MviState
 import io.reactivex.Observable
@@ -18,8 +16,7 @@ import io.reactivex.Observable
 data class SwipeRefreshLoadingBehaviour<INPUT, OUTPUT, STATE : MviState>(
 		private val initialTriggers: Triggers<INPUT>,
 		private val swipeRefreshTriggers: Triggers<INPUT>,
-		private val loadWorker: SingleWorker<INPUT, OUTPUT>,
-		private val cancelPrevious: Boolean = true,
+		private val loadWorker: SingleWorker<InputData<INPUT>, OUTPUT>,
 		private val onInitialLoading: InputMessages<INPUT, STATE>,
 		private val onSwipeRefreshLoading: InputMessages<INPUT, STATE>,
 		private val onInitialError: ErrorMessages<INPUT, STATE>,
@@ -30,37 +27,38 @@ data class SwipeRefreshLoadingBehaviour<INPUT, OUTPUT, STATE : MviState>(
 
 	override fun createObservable(): Observable<MviReactorMessage<STATE>> {
 		val mappedSwipeRefreshTriggers = swipeRefreshTriggers.map { DataWithSwipeRefreshInfo(it, true) }
-		val mappedInitialTriggers = swipeRefreshTriggers.map { DataWithSwipeRefreshInfo(it, false) }
+		val mappedInitialTriggers = initialTriggers.map { DataWithSwipeRefreshInfo(it, false) }
+		val mappedTriggers = mappedSwipeRefreshTriggers + mappedInitialTriggers
 
-		return LoadingBehaviour<DataWithSwipeRefreshInfo<INPUT>, OUTPUT, STATE>(
-				triggers = mappedSwipeRefreshTriggers + mappedInitialTriggers,
-				loadWorker = single { loadWorker.execute(it.triggerData) },
-				cancelPrevious = cancelPrevious,
-				onLoading = dispatch { selectCorrectLoadingMessage(it) },
-				onError = dispatch { selectCorrectErrorMessage(it) },
-				onData = dispatch { selectCorrectDataMessage(it) }
-		).createObservable()
+		return mappedTriggers.merge().switchMap { createLoadingObservable(it) }
 	}
 
-	private fun selectCorrectLoadingMessage(inputData: InputData<DataWithSwipeRefreshInfo<INPUT>>) : MviReactorMessage<STATE> {
-		val data = InputData(inputData.data.triggerData)
-		if (inputData.data.isSwipeRefreshInput) {
+	private fun createLoadingObservable(input: DataWithSwipeRefreshInfo<INPUT>): Observable<MviReactorMessage<STATE>> {
+		return loadWorker.executeAsObservable(InputData(input.triggerData))
+				.map { selectCorrectDataMessage(input, it) }
+				.onErrorReturn { selectCorrectErrorMessage(it, input) }
+				.startWith(selectCorrectLoadingMessage(input))
+	}
+
+	private fun selectCorrectLoadingMessage(dataWithSwipeRefreshInfo: DataWithSwipeRefreshInfo<INPUT>) : MviReactorMessage<STATE> {
+		val data = InputData(dataWithSwipeRefreshInfo.triggerData)
+		if (dataWithSwipeRefreshInfo.isSwipeRefreshInput) {
 			return onSwipeRefreshLoading.applyData(data)
 		}
 		return onInitialLoading.applyData(data)
 	}
 
-	private fun selectCorrectErrorMessage(errorWithData: ErrorWithData<DataWithSwipeRefreshInfo<INPUT>>) : MviReactorMessage<STATE> {
-		val data = ErrorWithData(errorWithData.data.triggerData, errorWithData.error)
-		if (errorWithData.data.isSwipeRefreshInput) {
-			return onSwipeRefreshError.applyData(data)
+	private fun selectCorrectErrorMessage(error: Throwable, dataWithSwipeRefreshInfo: DataWithSwipeRefreshInfo<INPUT>) : MviReactorMessage<STATE> {
+		val errorWithData = ErrorWithData(dataWithSwipeRefreshInfo.triggerData, error)
+		if (dataWithSwipeRefreshInfo.isSwipeRefreshInput) {
+			return onSwipeRefreshError.applyData(errorWithData)
 		}
-		return onInitialError.applyData(data)
+		return onInitialError.applyData(errorWithData)
 	}
 
-	private fun selectCorrectDataMessage(inputData: OutputData<DataWithSwipeRefreshInfo<INPUT>, OUTPUT>) : MviReactorMessage<STATE> {
-		val data = OutputData(inputData.input.triggerData, inputData.output)
-		if (inputData.input.isSwipeRefreshInput) {
+	private fun selectCorrectDataMessage(dataWithSwipeRefreshInfo: DataWithSwipeRefreshInfo<INPUT>, output: OUTPUT) : MviReactorMessage<STATE> {
+		val data = OutputData(dataWithSwipeRefreshInfo.triggerData, output)
+		if (dataWithSwipeRefreshInfo.isSwipeRefreshInput) {
 			return onSwipeRefreshData.applyData(data)
 		}
 		return onInitialData.applyData(data)

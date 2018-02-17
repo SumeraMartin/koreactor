@@ -14,6 +14,7 @@ typealias ErrorMessages<DATA, STATE> = Messages<ErrorWithData<DATA>, STATE>
 open class Messages<in DATA, STATE: MviState>(
         private var messages: Collection<(DATA) -> MviReactorMessage<STATE>>
 ) {
+
     fun applyData(data: DATA): MviReactorMessage<STATE> {
         return MessagesCollection(messages.map { it(data) })
     }

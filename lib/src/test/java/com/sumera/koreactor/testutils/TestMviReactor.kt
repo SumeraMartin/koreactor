@@ -12,7 +12,7 @@ class TestMviReactor : MviReactor<TestState>() {
 
     var actionTestObserver = TestObserver<MviAction<TestState>>()
 
-    var lifecycleTestObserver = TestObserver<LifecycleState>()
+    var lifecycleTestObserver = TestObserverWithOrder<LifecycleState>()
 
     var testSubject = PublishSubject.create<MviStateReducer<TestState>>()
 

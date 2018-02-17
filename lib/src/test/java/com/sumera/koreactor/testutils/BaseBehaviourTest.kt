@@ -30,20 +30,14 @@ open class BaseBehaviourTest {
 
     lateinit var testObserver: TestObserver<MviReactorMessage<TestState>>
 
+    lateinit var testObserverOrder: TestObserverWithOrder<MviReactorMessage<TestState>>
+
     @Before
     fun baseBefore() {
-        testObserver = TestObserver()
+        testObserverOrder = TestObserverWithOrder()
     }
 
     fun testMessage(vararg messages: MviReactorMessage<TestState>): MviReactorMessage<TestState> {
         return MessagesCollection(Arrays.asList(*messages))
-    }
-
-    fun on(description: String, action: () -> Unit) {
-        action()
-    }
-
-    fun it(description: String, action: () -> Unit) {
-        action()
     }
 }
