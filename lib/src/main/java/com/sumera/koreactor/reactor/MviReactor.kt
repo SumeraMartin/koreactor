@@ -92,6 +92,8 @@ abstract class MviReactor<STATE : MviState> : ViewModel() {
 
 	private val lifecycleSubject = BehaviorSubject.create<LifecycleState>()
 
+	private var isNewlyCreated = true
+
 	//region Public methods
 
 	fun sendAction(action: MviAction<STATE>) {
@@ -106,12 +108,13 @@ abstract class MviReactor<STATE : MviState> : ViewModel() {
 
 	//region Lifecycle methods
 
-	fun onCreate(isNewlyCreated: Boolean) {
+	fun onCreate(ignore: Boolean = false) { // TODO Remove ignore value from this method and from tests
 		if (isNewlyCreated) {
 			bindUnsafeEventsToSafeEvents()
 			bindActionsToReactor()
 			applyState(createInitialState())
 			lifecycleEventChanged(AttachState)
+			isNewlyCreated = false
 		}
 
 		bindSafeEventsToView()
