@@ -20,7 +20,7 @@ object LifecycleEventCorrectOrderValidator {
 		return when(previous) {
 			is AttachState -> current is CreateState
 			is CreateState -> current is StartState || current is DestroyState
-			is StartState -> current is ResumeState
+			is StartState -> current is ResumeState || current is StopState
 			is ResumeState -> current is PauseState
 			is PauseState -> current is StopState || current is ResumeState
 			is StopState -> current is DestroyState || current is StartState
