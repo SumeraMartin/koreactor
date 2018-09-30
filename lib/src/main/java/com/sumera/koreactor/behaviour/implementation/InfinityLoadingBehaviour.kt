@@ -7,13 +7,15 @@ import com.sumera.koreactor.behaviour.Triggers
 import com.sumera.koreactor.reactor.data.MviReactorMessage
 import com.sumera.koreactor.reactor.data.MviState
 import io.reactivex.Observable
+import io.reactivex.Single
+import io.reactivex.functions.BiFunction
 
 data class InfinityLoadingBehaviour<INPUT_DATA, OUTPUT_DATA, STATE : MviState>(
 		private val initialTriggers: Triggers<out INPUT_DATA>,
 		private val loadMoreTriggers: Triggers<out INPUT_DATA>,
 		private val loadWorker: SingleWorker<LoadData<INPUT_DATA>, List<OUTPUT_DATA>>,
 		private val limit: Int,
-		private val initialOffset: Int,
+		private val offsetSingle: Single<Int>,
 		private val initialLoadingMessage: Messages<INPUT_DATA, STATE>,
 		private val loadingMoreMessage: Messages<INPUT_DATA, STATE>,
 		private val initialErrorMessage: Messages<Throwable, STATE>,
@@ -25,8 +27,10 @@ data class InfinityLoadingBehaviour<INPUT_DATA, OUTPUT_DATA, STATE : MviState>(
 
 	override fun createObservable(): Observable<MviReactorMessage<STATE>> {
 		return initialTriggers.merge()
-				.switchMap { inputData ->
-					var offset = this.initialOffset
+				.withLatestFrom(offsetSingle.toObservable(), BiFunction { inputData: INPUT_DATA, offset: Int -> Pair(inputData, offset) })
+				.switchMap { (inputData, offset) ->
+					val initialOffset = 0
+					var offset = offset
 					var isCompleted = false
 					Observable.merge(Observable.just(inputData), loadMoreTriggers.merge())
 							.filter { !isCompleted }

@@ -22,6 +22,7 @@ import com.sumera.koreactor.reactor.data.PauseState
 import com.sumera.koreactor.reactor.data.ResumeState
 import com.sumera.koreactor.reactor.data.StartState
 import com.sumera.koreactor.reactor.data.StopState
+import com.sumera.koreactor.util.bundle.BundleWrapper
 import com.sumera.koreactor.view.MviBindableViewDelegate
 import io.reactivex.Maybe
 import io.reactivex.Observable
@@ -106,14 +107,32 @@ abstract class MviReactor<STATE : MviState> : ViewModel() {
 
 	//endregion
 
+	//region SaveInstanceState method
+	protected open fun onSaveInstanceState(state: STATE, bundleWrapper: BundleWrapper) {
+		// No-op
+	}
+
+	protected open fun onRestoreSaveInstanceState(state: STATE, bundleWrapper: BundleWrapper): STATE {
+		return state
+	}
+	//endregion
+
 	//region Lifecycle methods
 
-	fun onCreate(ignore: Boolean = false) { // TODO Remove ignore value from this method and from tests
+	fun onSaveInstanceState(bundleWrapper: BundleWrapper) {
+		val state = stateSubject.value
+		onSaveInstanceState(state, bundleWrapper)
+	}
+
+	fun onCreate(bundleWrapper: BundleWrapper?) {
 		if (isNewlyCreated) {
 			bindUnsafeEventsToSafeEvents()
 			bindActionsToReactor()
-			applyState(createInitialState())
+
+			initializeState(bundleWrapper)
+
 			lifecycleEventChanged(AttachState)
+
 			isNewlyCreated = false
 		}
 
@@ -216,6 +235,22 @@ abstract class MviReactor<STATE : MviState> : ViewModel() {
 
 	//endregion
 
+	//region State handling
+	private fun onRestoreSaveInstanceState(bundleWrapper: BundleWrapper) {
+		val state = stateSubject.value
+		val restoredState = onRestoreSaveInstanceState(state, bundleWrapper)
+		applyState(restoredState)
+	}
+
+	private fun initializeState(bundleWrapper: BundleWrapper?) {
+		var initialState = createInitialState()
+		if (bundleWrapper != null) {
+			initialState = onRestoreSaveInstanceState(initialState, bundleWrapper)
+		}
+		applyState(initialState)
+	}
+	//endregion
+
 	//region Reactor bindings
 
 	private fun bindActionsToReactor() {
@@ -269,8 +304,8 @@ abstract class MviReactor<STATE : MviState> : ViewModel() {
 
 	//region Data handling
 
-	private fun applyEither(either: EventOrReducer<STATE>) {
-		either.toEither.fold({ applyEvent(it) }, { applyReducer(it) })
+	private fun applyEither(eventOrReducer: EventOrReducer<STATE>) {
+		eventOrReducer.toEither.fold({ applyEvent(it) }, { applyReducer(it) })
 	}
 
 	private fun applyReducer(reducer: MviStateReducer<STATE>) {

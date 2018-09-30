@@ -13,3 +13,5 @@ object OnCounterButtonCLickAction : MainActions()
 object OnSimpleLoadingButtonClickAction : MainActions()
 
 object OnTimerButtonClickAction : MainActions()
+
+object OnToastsButtonClickAction : MainActions()

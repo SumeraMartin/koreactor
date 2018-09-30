@@ -2,18 +2,18 @@ package com.sumera.koreactor.behaviour
 
 import io.reactivex.Observable
 import io.reactivex.Single
-import java.util.*
+import java.util.Arrays
 
 class Triggers<out DATA>(
         private val observables: List<Observable<out DATA>>
 ) {
     fun merge(): Observable<out DATA> {
         return Observable.merge(observables)
-                .onErrorResumeNext({ error: Throwable ->
+                .onErrorResumeNext { error: Throwable ->
                     Observable.error<DATA>(
                             IllegalStateException("Triggers should not contain any errors", error)
                     )
-                })
+                }
     }
 }
 

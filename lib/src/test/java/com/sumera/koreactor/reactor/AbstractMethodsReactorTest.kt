@@ -1,6 +1,7 @@
 package com.sumera.koreactor.reactor
 
 import com.sumera.koreactor.reactor.data.LifecycleState
+import com.sumera.koreactor.testutils.NoOpBundleWrapper
 import com.sumera.koreactor.testutils.RxTestRule
 import com.sumera.koreactor.testutils.TestMviBindableDelegate
 import com.sumera.koreactor.testutils.TestMviReactor
@@ -39,7 +40,7 @@ class AbstractMethodsReactorTest {
         reactor.assertBindCallsCount(0)
         reactor.assertCreateInitialStateCallsCount(0)
 
-        reactor.onCreate(true)
+        reactor.onCreate(null)
 
         reactor.assertBindCallsCount(1)
         reactor.assertCreateInitialStateCallsCount(1)
@@ -80,7 +81,7 @@ class AbstractMethodsReactorTest {
         reactor.assertBindCallsCount(0)
         reactor.assertCreateInitialStateCallsCount(0)
 
-        reactor.onCreate(true)
+        reactor.onCreate(null)
 
         reactor.assertBindCallsCount(1)
         reactor.assertCreateInitialStateCallsCount(1)
@@ -131,7 +132,7 @@ class AbstractMethodsReactorTest {
         reactor.assertBindCallsCount(0)
         reactor.assertCreateInitialStateCallsCount(0)
 
-        reactor.onCreate(true)
+        reactor.onCreate(null)
 
         reactor.assertBindCallsCount(1)
         reactor.assertCreateInitialStateCallsCount(1)
@@ -192,7 +193,7 @@ class AbstractMethodsReactorTest {
         reactor.assertBindCallsCount(0)
         reactor.assertCreateInitialStateCallsCount(0)
 
-        reactor.onCreate(true)
+        reactor.onCreate(null)
 
         reactor.assertBindCallsCount(1)
         reactor.assertCreateInitialStateCallsCount(1)
@@ -227,7 +228,7 @@ class AbstractMethodsReactorTest {
         reactor.assertBindCallsCount(1)
         reactor.assertCreateInitialStateCallsCount(1)
 
-        reactor.onCreate(false)
+        reactor.onCreate(NoOpBundleWrapper())
 
         reactor.assertBindCallsCount(1)
         reactor.assertCreateInitialStateCallsCount(1)
@@ -268,7 +269,7 @@ class AbstractMethodsReactorTest {
         reactor.assertBindCallsCount(0)
         reactor.assertCreateInitialStateCallsCount(0)
 
-        reactor.onCreate(true)
+        reactor.onCreate(null)
 
         reactor.assertBindCallsCount(1)
         reactor.assertCreateInitialStateCallsCount(1)
@@ -277,5 +278,41 @@ class AbstractMethodsReactorTest {
 
         reactor.assertBindCallsCount(1)
         reactor.assertCreateInitialStateCallsCount(1)
+    }
+
+    @Test
+    fun `reactor with normal flow should not call OnRestoreSaveInstanceState method`() {
+        reactor.setBindableView(view)
+        reactor.onCreate(null)
+        reactor.onStart()
+        reactor.onResume()
+        reactor.onPause()
+        reactor.onStop()
+        reactor.onDestroy(true)
+
+        reactor.assertOnRestoreSaveInstanceStateCallsCount(0)
+    }
+
+    @Test
+    fun `reactor with rotation flow should not call OnRestoreSaveInstanceState method`() {
+        reactor.setBindableView(view)
+        reactor.onCreate(null)
+        reactor.onStart()
+        reactor.onResume()
+        reactor.onPause()
+        reactor.onStop()
+        reactor.onDestroy(false)
+        reactor.setBindableView(view)
+        reactor.onCreate(NoOpBundleWrapper())
+
+        reactor.assertOnRestoreSaveInstanceStateCallsCount(0)
+    }
+
+    @Test
+    fun `reactor with process death flow should call OnRestoreSaveInstanceState method`() {
+        reactor.setBindableView(view)
+        reactor.onCreate(NoOpBundleWrapper())
+
+        reactor.assertOnRestoreSaveInstanceStateCallsCount(1)
     }
 }

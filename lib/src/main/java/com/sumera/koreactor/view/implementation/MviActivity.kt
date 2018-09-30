@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity
 import com.sumera.koreactor.reactor.MviReactor
 import com.sumera.koreactor.reactor.MviReactorDelegate
 import com.sumera.koreactor.reactor.data.MviAction
+import com.sumera.koreactor.reactor.data.MviEvent
 import com.sumera.koreactor.reactor.data.MviState
 import com.sumera.koreactor.view.MviBindableView
 import io.reactivex.Observable
@@ -69,11 +70,11 @@ abstract class MviActivity<STATE : MviState> : AppCompatActivity(), MviBindableV
 		reactorDelegate.bindActionObservable(this)
 	}
 
-	protected fun <VALUE> Observable<VALUE>.observeState(action: (VALUE) -> (Unit)) {
+	protected fun <STATE> Observable<STATE>.observeState(action: (STATE) -> (Unit)) {
 		reactorDelegate.bindStateObservable(this, action)
 	}
 
-	protected fun <VALUE> Observable<VALUE>.observeEvent(action: (VALUE) -> (Unit)) {
+	protected fun <EVENT : MviEvent<STATE>> Observable<EVENT>.observeEvent(action: (EVENT) -> (Unit)) {
 		reactorDelegate.bindEventsObservable(this, action)
 	}
 

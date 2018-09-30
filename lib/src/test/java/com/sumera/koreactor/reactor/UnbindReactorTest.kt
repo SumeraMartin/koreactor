@@ -140,7 +140,7 @@ class UnbindReactorTest {
 
         assertFalse(reactor.testSubject.hasObservers())
 
-        reactor.onCreate(true)
+        reactor.onCreate(null)
 
         assertTrue(reactor.testSubject.hasObservers())
 
@@ -161,7 +161,7 @@ class UnbindReactorTest {
 
         assertFalse(reactor.testSubject.hasObservers())
 
-        reactor.onCreate(true)
+        reactor.onCreate(null)
 
         assertTrue(reactor.testSubject.hasObservers())
 

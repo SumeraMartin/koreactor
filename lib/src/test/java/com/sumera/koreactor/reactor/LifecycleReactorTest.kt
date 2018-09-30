@@ -9,6 +9,7 @@ import com.sumera.koreactor.reactor.data.PauseState
 import com.sumera.koreactor.reactor.data.ResumeState
 import com.sumera.koreactor.reactor.data.StartState
 import com.sumera.koreactor.reactor.data.StopState
+import com.sumera.koreactor.testutils.NoOpBundleWrapper
 import com.sumera.koreactor.testutils.RxTestRule
 import com.sumera.koreactor.testutils.TestMviBindableDelegate
 import com.sumera.koreactor.testutils.TestMviReactor
@@ -45,7 +46,7 @@ class LifecycleReactorTest {
 
         lifecycleObserver.assertNextValuesCount()
 
-        reactor.onCreate(true)
+        reactor.onCreate(null)
 
         lifecycleObserver.assertNextValue(AttachState)
         lifecycleObserver.assertNextValue(CreateState)
@@ -86,7 +87,7 @@ class LifecycleReactorTest {
 
         lifecycleObserver.assertNextValuesCount()
 
-        reactor.onCreate(true)
+        reactor.onCreate(null)
 
         lifecycleObserver.assertNextValue(AttachState)
         lifecycleObserver.assertNextValue(CreateState)
@@ -137,7 +138,7 @@ class LifecycleReactorTest {
 
         lifecycleObserver.assertNextValuesCount()
 
-        reactor.onCreate(true)
+        reactor.onCreate(null)
 
         lifecycleObserver.assertNextValue(AttachState)
         lifecycleObserver.assertNextValue(CreateState)
@@ -198,7 +199,7 @@ class LifecycleReactorTest {
 
         lifecycleObserver.assertNextValuesCount()
 
-        reactor.onCreate(true)
+        reactor.onCreate(null)
 
         lifecycleObserver.assertNextValue(AttachState)
         lifecycleObserver.assertNextValue(CreateState)
@@ -233,7 +234,7 @@ class LifecycleReactorTest {
 
         lifecycleObserver.assertNextValuesCount()
 
-        reactor.onCreate(false)
+        reactor.onCreate(NoOpBundleWrapper())
 
         lifecycleObserver.assertNextValue(CreateState)
         lifecycleObserver.assertNextValuesCount()
@@ -273,7 +274,7 @@ class LifecycleReactorTest {
 
         lifecycleObserver.assertNextValuesCount()
 
-        reactor.onCreate(true)
+        reactor.onCreate(null)
 
         lifecycleObserver.assertNextValue(AttachState)
         lifecycleObserver.assertNextValue(CreateState)

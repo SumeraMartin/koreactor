@@ -1,9 +1,9 @@
 package com.sumera.koreactorexampleapp.lib
 
-import com.sumera.koreactorexampleapp.lib.annotation.InitialLifecycleState
-import com.sumera.koreactorexampleapp.lib.annotation.RunAfter
 import com.sumera.koreactor.reactor.MviReactor
 import com.sumera.koreactor.reactor.data.MviState
+import com.sumera.koreactorexampleapp.lib.annotation.InitialLifecycleState
+import com.sumera.koreactorexampleapp.lib.annotation.RunAfter
 import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.plugins.RxJavaPlugins
 import io.reactivex.schedulers.TestScheduler
@@ -18,12 +18,7 @@ abstract class ReactorTestRule<STATE : MviState> : TestRule {
 	val scheduler: TestScheduler
 		get() = testScheduler
 
-	val testWrapper: ReactorTestWrapper<STATE>
-		get() = reactorTestWrapper
-
 	private var testScheduler = TestScheduler()
-
-	private lateinit var reactor: MviReactor<STATE>
 
 	private lateinit var testView: TestMviBindableDelegate<STATE>
 
@@ -48,13 +43,13 @@ abstract class ReactorTestRule<STATE : MviState> : TestRule {
 	}
 
 	fun runTest(testBlock: ReactorTestWrapper<STATE>.() -> Unit) {
-		testWrapper.testBlock()
+		reactorTestWrapper.testBlock()
 	}
 
 	private fun initializeReactor() {
-		reactor = createNewReactorInstance()
+		val reactorFactory = { createNewReactorInstance() }
 		testView = TestMviBindableDelegate()
-		reactorTestWrapper = ReactorTestWrapper(reactor, testView, testScheduler)
+		reactorTestWrapper = ReactorTestWrapper(reactorFactory, testView, testScheduler)
 	}
 
 	private fun initializeSchedulers() {
@@ -86,16 +81,16 @@ abstract class ReactorTestRule<STATE : MviState> : TestRule {
 	private fun runWithinScope(runAfterAnnotation: RunAfter, base: Statement) {
 		when (runAfterAnnotation.initialLifecycleState) {
 			InitialLifecycleState.ON_CREATE -> {
-				testWrapper.runTestCaseAfterOnCreate { base.evaluate() }
+				reactorTestWrapper.runTestCaseAfterOnCreate { base.evaluate() }
 			}
 			InitialLifecycleState.ON_START -> {
-				testWrapper.runTestCaseAfterOnStart { base.evaluate() }
+				reactorTestWrapper.runTestCaseAfterOnStart { base.evaluate() }
 			}
 			InitialLifecycleState.ON_RESUME -> {
-				testWrapper.runTestCaseAfterOnResume { base.evaluate() }
+				reactorTestWrapper.runTestCaseAfterOnResume { base.evaluate() }
 			}
 			InitialLifecycleState.UNINITIALIZED -> {
-				testWrapper.runTestCaseWithoutAnyLifecycleCalls { base.evaluate() }
+				reactorTestWrapper.runTestCaseWithoutAnyLifecycleCalls { base.evaluate() }
 			}
 		}
 	}

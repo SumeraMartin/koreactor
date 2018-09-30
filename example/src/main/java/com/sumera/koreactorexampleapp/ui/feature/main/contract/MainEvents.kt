@@ -13,3 +13,5 @@ object NavigateToCounterEvent : MainEvent()
 object NavigateToSimpleLoadingEvent : MainEvent()
 
 object NavigateToTimerEvent : MainEvent()
+
+object NavigateToToastsEvent : MainEvent()

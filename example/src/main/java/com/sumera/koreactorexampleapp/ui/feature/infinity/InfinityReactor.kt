@@ -7,6 +7,7 @@ import com.sumera.koreactor.behaviour.triggers
 import com.sumera.koreactor.reactor.MviReactor
 import com.sumera.koreactor.reactor.data.AttachState
 import com.sumera.koreactor.reactor.data.MviAction
+import com.sumera.koreactor.util.bundle.BundleWrapper
 import com.sumera.koreactorexampleapp.data.ToDoItem
 import com.sumera.koreactorexampleapp.injection.PerActivity
 import com.sumera.koreactorexampleapp.ui.feature.infinity.contract.AppendNewData
@@ -16,7 +17,6 @@ import com.sumera.koreactorexampleapp.ui.feature.infinity.contract.OnItemClicked
 import com.sumera.koreactorexampleapp.ui.feature.infinity.contract.OnRetryInfinityLoadingAction
 import com.sumera.koreactorexampleapp.ui.feature.infinity.contract.OnRetryInitialAction
 import com.sumera.koreactorexampleapp.ui.feature.infinity.contract.OnScrolledToBottomAction
-import com.sumera.koreactorexampleapp.ui.feature.infinity.contract.SetNewData
 import com.sumera.koreactorexampleapp.ui.feature.infinity.contract.ShowCompleted
 import com.sumera.koreactorexampleapp.ui.feature.infinity.contract.ShowInfinityError
 import com.sumera.koreactorexampleapp.ui.feature.infinity.contract.ShowInfinityLoading
@@ -25,7 +25,7 @@ import com.sumera.koreactorexampleapp.ui.feature.infinity.contract.ShowInitialLo
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.functions.BiFunction
-import java.util.*
+import java.util.Random
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -33,6 +33,10 @@ import javax.inject.Inject
 class InfinityReactor @Inject constructor(
 
 ) : MviReactor<InfinityState>() {
+
+	companion object {
+		private const val DATA_KEY = "data_key"
+	}
 
 	override fun createInitialState(): InfinityState {
 		return InfinityState(
@@ -42,6 +46,15 @@ class InfinityReactor @Inject constructor(
 				isInfinityError = false,
 				isCompleted = false,
 				data = null)
+	}
+
+	override fun onSaveInstanceState(state: InfinityState, bundleWrapper: BundleWrapper) {
+		bundleWrapper.putParcelableArray(DATA_KEY, state.data?.toTypedArray())
+	}
+
+	override fun onRestoreSaveInstanceState(state: InfinityState, bundleWrapper: BundleWrapper): InfinityState {
+		val data = bundleWrapper.getParcelableArray(DATA_KEY)?.toList() as? List<ToDoItem>
+		return state.copy(data = data)
 	}
 
 	override fun bind(actions: Observable<MviAction<InfinityState>>) {
@@ -60,13 +73,13 @@ class InfinityReactor @Inject constructor(
 				loadMoreTriggers = triggers(startLoadingNextDataAction, retryInfinityLoadingAction),
 				loadWorker = single { input -> returnsSomeData(input.limit, input.offset) },
 				limit = 10,
-				initialOffset = 0,
+				offsetSingle = stateSingle.map { it.data?.size ?: 0 },
 				initialLoadingMessage = messages { ShowInitialLoading },
 				loadingMoreMessage = messages { ShowInfinityLoading },
 				initialErrorMessage = messages { ShowInitialError },
 				loadingMoreErrorMessage = messages { ShowInfinityError },
 				completeMessage = messages { ShowCompleted },
-				initialDataMessage = messages { SetNewData(it) },
+				initialDataMessage = messages { AppendNewData(it) },
 				loadMoreDataMessage = messages { AppendNewData(it) }
 		).bindToView()
 

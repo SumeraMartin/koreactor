@@ -61,7 +61,7 @@ class InfinityLoadingBehaviourTest : BaseBehaviourTest() {
                     firstSingleWorker()
                 },
                 limit = 10,
-                initialOffset = 5,
+                offsetSingle = Single.just(5),
                 initialDataMessage = messages(),
                 loadMoreDataMessage = messages(),
                 initialErrorMessage = messages(),
@@ -370,7 +370,7 @@ class InfinityLoadingBehaviourTest : BaseBehaviourTest() {
                 loadMoreTriggers = triggers(loadMoreSubject),
                 loadWorker = single { firstSingleWorker() },
                 limit = limit,
-                initialOffset = offset,
+                offsetSingle = Single.just(offset),
                 initialDataMessage = messages { OutputList(ids = it, source = "init") },
                 loadMoreDataMessage = messages { OutputList(ids = it, source = "more") },
                 initialLoadingMessage = messages { Output(id = "Load init $it") },
@@ -395,7 +395,7 @@ class InfinityLoadingBehaviourTest : BaseBehaviourTest() {
                     }
                 },
                 limit = limit,
-                initialOffset = offset,
+                offsetSingle = Single.just(offset),
                 initialDataMessage = messages { OutputList(ids = it, source = "init") },
                 loadMoreDataMessage = messages { OutputList(ids = it, source = "more") },
                 initialLoadingMessage = messages { Output(id = "Load init $it") },

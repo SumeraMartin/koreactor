@@ -3,28 +3,17 @@ package com.sumera.koreactorexampleapp.ui.feature.todo
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
-import android.widget.Toast
-import com.jakewharton.rxbinding2.support.v4.widget.refreshes
 import com.jakewharton.rxbinding2.view.clicks
-import com.sumera.koreactorexampleapp.R
 import com.sumera.koreactor.reactor.MviReactor
-import com.sumera.koreactor.reactor.data.MviEvent
-import com.sumera.koreactorexampleapp.ui.base.BaseActivity
-import com.sumera.koreactorexampleapp.ui.common.PlaceholderLayout
-import com.sumera.koreactorexampleapp.ui.feature.todo.adapter.ToDoAdapter
-import com.sumera.koreactorexampleapp.ui.feature.todo.contract.NavigateToSomewhereElse
-import com.sumera.koreactorexampleapp.ui.feature.todo.contract.OnAddItemAction
-import com.sumera.koreactorexampleapp.ui.feature.todo.contract.OnRetryAction
-import com.sumera.koreactorexampleapp.ui.feature.todo.contract.OnSwipeRefreshAction
-import com.sumera.koreactorexampleapp.ui.feature.todo.contract.OnToDoItemAction
-import com.sumera.koreactorexampleapp.ui.feature.todo.contract.OnToolbarIconClicked
-import com.sumera.koreactorexampleapp.ui.feature.todo.contract.ShowToastEverytime
-import com.sumera.koreactorexampleapp.ui.feature.todo.contract.ShowToastOnlyVisible
-import com.sumera.koreactorexampleapp.ui.feature.todo.contract.ShowToastOnlyVisibleBuffered
-import com.sumera.koreactorexampleapp.ui.feature.todo.contract.ToDoState
 import com.sumera.koreactor.util.data.asOptional
 import com.sumera.koreactor.util.extension.getChange
-import com.sumera.koreactor.util.extension.getTrue
+import com.sumera.koreactorexampleapp.R
+import com.sumera.koreactorexampleapp.tools.extensions.isVisible
+import com.sumera.koreactorexampleapp.ui.base.BaseActivity
+import com.sumera.koreactorexampleapp.ui.feature.todo.adapter.ToDoAdapter
+import com.sumera.koreactorexampleapp.ui.feature.todo.contract.OnAddItemAction
+import com.sumera.koreactorexampleapp.ui.feature.todo.contract.OnToDoItemAction
+import com.sumera.koreactorexampleapp.ui.feature.todo.contract.ToDoState
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.activity_todo.*
 import javax.inject.Inject
@@ -54,52 +43,24 @@ class ToDoActivity : BaseActivity<ToDoState>() {
 				.map { OnToDoItemAction(it) }
 				.bindToReactor()
 
-		// Swipe refresh start
-		todo_swipeRefresh.refreshes()
-				.map { OnSwipeRefreshAction }
-				.bindToReactor()
-
 		// Fab button clicked
 		todo_plus.clicks()
 				.map { OnAddItemAction }
 				.bindToReactor()
-
-		// Placeholder retry button clicked
-		todo_placeholder.retryClicks()
-				.map { OnRetryAction }
-				.bindToReactor()
-
-		// Toolbar icon clicked
-		todo_toolbarIcon.clicks()
-				.map { OnToolbarIconClicked }
-				.bindToReactor()
 	}
 
 	override fun bindToState(stateObservable: Observable<ToDoState>) {
-
-		// Show error layout
-		stateObservable
-				.getTrue { it.isError }
-				.observeState { todo_placeholder.show(PlaceholderLayout.NETWORK_ERROR) }
-
-		// Show loading layout
-		stateObservable
-				.getTrue { it.isLoading }
-				.observeState { todo_placeholder.show(PlaceholderLayout.LOADING) }
-
-		// Show swipe refresh layout
-		stateObservable
-				.getChange { it.isSwipeLoading }
-				.observeState { todo_swipeRefresh.isRefreshing = it }
-
 		// Show data
 		stateObservable
 				.getChange { it.data.asOptional() }
 				.filter { it.value?.isNotEmpty() ?: false }
-				.observeState {
-					todo_placeholder.hide()
-					adapter.data = it.value!!
-				}
+				.observeState { adapter.data = it.value!! }
+
+        // Show empty data
+        stateObservable
+                .getChange { it.data.asOptional() }
+				.map { it.value?.isEmpty() ?: true }
+                .observeState { todoViewHolder_empty.isVisible = it }
 
 		// Show info message
 		stateObservable
@@ -109,30 +70,15 @@ class ToDoActivity : BaseActivity<ToDoState>() {
 		// Hide info message
 		stateObservable
 				.getChange({ it.infoMessage }, { it.isEmpty() })
-				.observeState { hideSnackbar() }
+				.observeState { hideSnackBar() }
 	}
 
-	override fun bindToEvent(eventsObservable: Observable<MviEvent<ToDoState>>) {
-		eventsObservable.observeEvent { event ->
-			when(event) {
-				is ShowToastEverytime ->
-					Toast.makeText(this, event.message, Toast.LENGTH_SHORT).show()
-				is ShowToastOnlyVisible ->
-					Toast.makeText(this, event.message, Toast.LENGTH_SHORT).show()
-				is ShowToastOnlyVisibleBuffered ->
-					Toast.makeText(this, event.message, Toast.LENGTH_SHORT).show()
-				is NavigateToSomewhereElse ->
-					finish()
-			}
-		}
-	}
-
-	fun showSnackBar(snackTitle: String) {
+	private fun showSnackBar(snackTitle: String) {
 		snackbar = Snackbar.make(todo_contentRoot, snackTitle, Snackbar.LENGTH_INDEFINITE)
 		snackbar?.apply { show() }
 	}
 
-	fun hideSnackbar() {
+	private fun hideSnackBar() {
 		snackbar?.apply { dismiss() }
 	}
 }

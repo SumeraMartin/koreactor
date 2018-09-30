@@ -13,11 +13,8 @@ import com.sumera.koreactor.reactor.data.StopState
 object LifecycleEventCorrectOrderValidator {
 
 	fun isValidOrder(previous: LifecycleState?, current: LifecycleState): Boolean {
-		if (previous == null) {
-			return current is AttachState
-		}
-
 		return when(previous) {
+			null -> current is AttachState
 			is AttachState -> current is CreateState
 			is CreateState -> current is StartState || current is DestroyState
 			is StartState -> current is ResumeState || current is StopState

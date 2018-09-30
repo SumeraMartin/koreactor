@@ -18,6 +18,8 @@ import com.sumera.koreactorexampleapp.ui.feature.timer.TimerFragment
 import com.sumera.koreactorexampleapp.ui.feature.timer.TimerFragmentModule
 import com.sumera.koreactorexampleapp.ui.feature.timer.activity.TimerActivity
 import com.sumera.koreactorexampleapp.ui.feature.timer.activity.TimerActivityModule
+import com.sumera.koreactorexampleapp.ui.feature.toasts.ToastsActivity
+import com.sumera.koreactorexampleapp.ui.feature.toasts.ToastsActivityModule
 import com.sumera.koreactorexampleapp.ui.feature.todo.ToDoActivity
 import com.sumera.koreactorexampleapp.ui.feature.todo.ToDoActivityModule
 import dagger.Binds
@@ -47,22 +49,26 @@ abstract class  AppModule {
     abstract fun todoActivityInjector(): ToDoActivity
 
     @PerActivity
-    @ContributesAndroidInjector(modules = arrayOf(CounterActivityModule::class))
+    @ContributesAndroidInjector(modules = [CounterActivityModule::class])
     abstract fun counterActivityInjector(): CounterActivity
 
     @PerActivity
-    @ContributesAndroidInjector(modules = arrayOf(MainActivityModule::class))
+    @ContributesAndroidInjector(modules = [MainActivityModule::class])
     abstract fun mainActivityInjector(): MainActivity
 
     @PerActivity
-    @ContributesAndroidInjector(modules = arrayOf(SimpleLoadingActivityModule::class))
+    @ContributesAndroidInjector(modules = [SimpleLoadingActivityModule::class])
     abstract fun simpleLoadingActivityInjector(): SimpleLoadingActivity
 
     @PerActivity
-    @ContributesAndroidInjector(modules = arrayOf(TimerActivityModule::class))
+    @ContributesAndroidInjector(modules = [TimerActivityModule::class])
     abstract fun timerActivityInjector(): TimerActivity
 
     @PerFragment
     @ContributesAndroidInjector(modules = [TimerFragmentModule::class])
     abstract fun timerFragmentInjector(): TimerFragment
+
+    @PerActivity
+    @ContributesAndroidInjector(modules = [ToastsActivityModule::class])
+    abstract fun toastsActivityInjector(): ToastsActivity
 }

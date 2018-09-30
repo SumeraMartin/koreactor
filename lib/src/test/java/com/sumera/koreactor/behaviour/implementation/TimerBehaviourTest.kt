@@ -33,7 +33,7 @@ class TimerBehaviourTest : BaseBehaviourTest() {
                 initialTrigger = triggers(initialSubject),
                 duration = 1,
                 timeUnit = TimeUnit.SECONDS,
-                tickMessage = messages({ Output(id = it.toString()) })
+                tickMessage = messages { Output(id = it.toString()) }
         ).createObservable()
 
         behaviour.subscribe(testObserver)
