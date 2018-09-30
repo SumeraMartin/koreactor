@@ -5,6 +5,7 @@ import com.sumera.koreactor.reactor.data.MviAction
 import com.sumera.koreactor.reactor.data.MviEvent
 import com.sumera.koreactor.reactor.data.RequireStartedStateCached
 import com.sumera.koreactor.reactor.data.RequireStartedStateNotCached
+import com.sumera.koreactor.testutils.NoOpBundleWrapper
 import com.sumera.koreactor.testutils.RxTestRule
 import com.sumera.koreactor.testutils.TestEvent
 import com.sumera.koreactor.testutils.TestMviBindableDelegate
@@ -47,7 +48,7 @@ class EventReactorTest {
     @Test
     fun everytimeEvent_afterOnCreate_isDispatched() {
         reactor.setBindableView(view)
-        reactor.onCreate(true)
+        reactor.onCreate(null)
 
         sendAndTrigger(TestEvent("test", DispatchedEveryTime))
 
@@ -58,7 +59,7 @@ class EventReactorTest {
     @Test
     fun everytimeEvent_afterOnResume_isDispatched() {
         reactor.setBindableView(view)
-        reactor.onCreate(true)
+        reactor.onCreate(null)
         reactor.onStart()
         reactor.onResume()
 
@@ -71,7 +72,7 @@ class EventReactorTest {
     @Test
     fun everytimeEvent_afterOnPause_isDispatched() {
         reactor.setBindableView(view)
-        reactor.onCreate(true)
+        reactor.onCreate(null)
         reactor.onStart()
         reactor.onResume()
         reactor.onPause()
@@ -85,7 +86,7 @@ class EventReactorTest {
     @Test
     fun everytimeEvent_afterOnStop_isDispatched() {
         reactor.setBindableView(view)
-        reactor.onCreate(true)
+        reactor.onCreate(null)
         reactor.onStart()
         reactor.onResume()
         reactor.onPause()
@@ -100,7 +101,7 @@ class EventReactorTest {
     @Test
     fun everytimeEvent_afterOnDestroy_isNotDispatched() {
         reactor.setBindableView(view)
-        reactor.onCreate(true)
+        reactor.onCreate(null)
         reactor.onStart()
         reactor.onResume()
         reactor.onPause()
@@ -115,7 +116,7 @@ class EventReactorTest {
     @Test
     fun everytimeEvent_afterOnDestroyWithOncreate_isDispatched() {
         reactor.setBindableView(view)
-        reactor.onCreate(true)
+        reactor.onCreate(null)
         reactor.onStart()
         reactor.onResume()
         reactor.onPause()
@@ -125,7 +126,7 @@ class EventReactorTest {
         sendAndTrigger(TestEvent("test", DispatchedEveryTime))
 
         reactor.setBindableView(view)
-        reactor.onCreate(false)
+        reactor.onCreate(NoOpBundleWrapper())
 
         view.assertNextEvent(TestEvent("test", DispatchedEveryTime))
         view.assertEventsCount(1)
@@ -134,7 +135,7 @@ class EventReactorTest {
     @Test
     fun requireStartedNotCached_afterOnCreate_isThrownAway() {
         reactor.setBindableView(view)
-        reactor.onCreate(true)
+        reactor.onCreate(null)
 
         sendAndTrigger(TestEvent("test", RequireStartedStateNotCached))
 
@@ -150,7 +151,7 @@ class EventReactorTest {
     @Test
     fun requireStartedNotCached_afterOnStart_isDispatched() {
         reactor.setBindableView(view)
-        reactor.onCreate(true)
+        reactor.onCreate(null)
         reactor.onStart()
 
         sendAndTrigger(TestEvent("test", RequireStartedStateNotCached))
@@ -169,7 +170,7 @@ class EventReactorTest {
     @Test
     fun requireStartedNotCached_afterOnResume_isDispatched() {
         reactor.setBindableView(view)
-        reactor.onCreate(true)
+        reactor.onCreate(null)
         reactor.onStart()
         reactor.onResume()
 
@@ -188,7 +189,7 @@ class EventReactorTest {
     @Test
     fun requireStartedNotCached_afterOnPause_isDispatched() {
         reactor.setBindableView(view)
-        reactor.onCreate(true)
+        reactor.onCreate(null)
         reactor.onStart()
         reactor.onResume()
         reactor.onPause()
@@ -207,7 +208,7 @@ class EventReactorTest {
     @Test
     fun requireStartedNotCached_afterOnStop_isThrownAway() {
         reactor.setBindableView(view)
-        reactor.onCreate(true)
+        reactor.onCreate(null)
         reactor.onStart()
         reactor.onResume()
         reactor.onPause()
@@ -217,7 +218,7 @@ class EventReactorTest {
 
         reactor.onDestroy(false)
         reactor.setBindableView(view)
-        reactor.onCreate(false)
+        reactor.onCreate(NoOpBundleWrapper())
         reactor.onStart()
         reactor.onResume()
 
@@ -227,7 +228,7 @@ class EventReactorTest {
     @Test
     fun requireStartedNotCached_afterOnDestroy_isThrownAway() {
         reactor.setBindableView(view)
-        reactor.onCreate(true)
+        reactor.onCreate(null)
         reactor.onStart()
         reactor.onResume()
         reactor.onPause()
@@ -237,7 +238,7 @@ class EventReactorTest {
         sendAndTrigger(TestEvent("test", RequireStartedStateNotCached))
 
         reactor.setBindableView(view)
-        reactor.onCreate(false)
+        reactor.onCreate(NoOpBundleWrapper())
         reactor.onStart()
         reactor.onResume()
 
@@ -247,7 +248,7 @@ class EventReactorTest {
     @Test
     fun requireStartedCached_afterOnCreateWithOnStart_isCachedAndDispatched() {
         reactor.setBindableView(view)
-        reactor.onCreate(true)
+        reactor.onCreate(null)
 
         sendAndTrigger(TestEvent("test", RequireStartedStateCached))
 
@@ -269,7 +270,7 @@ class EventReactorTest {
     @Test
     fun requireStartedCached_afterOnStart_isDispatched() {
         reactor.setBindableView(view)
-        reactor.onCreate(true)
+        reactor.onCreate(null)
         reactor.onStart()
 
         sendAndTrigger(TestEvent("test", RequireStartedStateCached))
@@ -288,7 +289,7 @@ class EventReactorTest {
     @Test
     fun requireStartedCached_afterOnResume_isDispatched() {
         reactor.setBindableView(view)
-        reactor.onCreate(true)
+        reactor.onCreate(null)
         reactor.onStart()
         reactor.onResume()
 
@@ -307,7 +308,7 @@ class EventReactorTest {
     @Test
     fun requireStartedCached_afterOnPause_isDispatched() {
         reactor.setBindableView(view)
-        reactor.onCreate(true)
+        reactor.onCreate(null)
         reactor.onStart()
         reactor.onResume()
         reactor.onPause()
@@ -326,7 +327,7 @@ class EventReactorTest {
     @Test
     fun requireStartedCached_afterOnStopWithRecreate_isCachedAndDispatched() {
         reactor.setBindableView(view)
-        reactor.onCreate(true)
+        reactor.onCreate(null)
         reactor.onStart()
         reactor.onResume()
         reactor.onPause()
@@ -338,7 +339,7 @@ class EventReactorTest {
 
         reactor.onDestroy(false)
         reactor.setBindableView(view)
-        reactor.onCreate(false)
+        reactor.onCreate(NoOpBundleWrapper())
         reactor.onStart()
 
         view.assertNextEvent(TestEvent("test", RequireStartedStateCached))
@@ -348,7 +349,7 @@ class EventReactorTest {
     @Test
     fun requireStartedCached_afterOnDestroyWithRecreate_isCachedAndDispatched() {
         reactor.setBindableView(view)
-        reactor.onCreate(true)
+        reactor.onCreate(null)
         reactor.onStart()
         reactor.onResume()
         reactor.onPause()
@@ -360,7 +361,7 @@ class EventReactorTest {
         view.assertEventsCount(0)
 
         reactor.setBindableView(view)
-        reactor.onCreate(false)
+        reactor.onCreate(NoOpBundleWrapper())
         reactor.onStart()
 
         view.assertNextEvent(TestEvent("test", RequireStartedStateCached))
@@ -370,7 +371,7 @@ class EventReactorTest {
     @Test
     fun requireStartedCachedMultiple_afterOnCreateWithOnStart_isCachedAndDispatched() {
         reactor.setBindableView(view)
-        reactor.onCreate(true)
+        reactor.onCreate(null)
 
         sendAndTrigger(TestEvent("test1", RequireStartedStateCached))
         sendAndTrigger(TestEvent("test2", RequireStartedStateCached))
@@ -393,7 +394,7 @@ class EventReactorTest {
     @Test
     fun differentBehaviours_afterOnCreateWithOnStart_areDispatchedByTheirBehaviours() {
         reactor.setBindableView(view)
-        reactor.onCreate(true)
+        reactor.onCreate(null)
 
         sendAndTrigger(TestEvent("test1", DispatchedEveryTime))
         sendAndTrigger(TestEvent("test2", RequireStartedStateCached))
@@ -416,7 +417,7 @@ class EventReactorTest {
     @Test
     fun differentBehaviours_afterOnStart_areDispatchedAll() {
         reactor.setBindableView(view)
-        reactor.onCreate(true)
+        reactor.onCreate(null)
         reactor.onStart()
 
         sendAndTrigger(TestEvent("test1", DispatchedEveryTime))
@@ -437,7 +438,7 @@ class EventReactorTest {
     @Test
     fun differentBehaviours_afterOnStopWithRecreate_areDispatchedByTheirBehaviours() {
         reactor.setBindableView(view)
-        reactor.onCreate(true)
+        reactor.onCreate(null)
         reactor.onStart()
         reactor.onResume()
         reactor.onPause()
@@ -453,7 +454,7 @@ class EventReactorTest {
 
         reactor.onDestroy(false)
         reactor.setBindableView(view)
-        reactor.onCreate(false)
+        reactor.onCreate(NoOpBundleWrapper())
         reactor.onStart()
 
         view.assertNextEvent(TestEvent("test2", RequireStartedStateCached))

@@ -2,6 +2,7 @@ package com.sumera.koreactor.reactor
 
 import com.sumera.koreactor.reactor.data.MviAction
 import com.sumera.koreactor.reactor.data.MviStateReducer
+import com.sumera.koreactor.testutils.NoOpBundleWrapper
 import com.sumera.koreactor.testutils.RxTestRule
 import com.sumera.koreactor.testutils.TestMviBindableDelegate
 import com.sumera.koreactor.testutils.TestReducer
@@ -44,7 +45,7 @@ class ReducerReactorTest {
     @Test
     fun reducer_afterOnCreate_isNotDispatched() {
         reactor.setBindableView(view)
-        reactor.onCreate(true)
+        reactor.onCreate(null)
 
         sendAndTrigger(TestReducer("test"))
 
@@ -54,7 +55,7 @@ class ReducerReactorTest {
     @Test
     fun reducer_afterOnCreate_isDispatchedAfterOnStart() {
         reactor.setBindableView(view)
-        reactor.onCreate(true)
+        reactor.onCreate(null)
 
         sendAndTrigger(TestReducer("test"))
 
@@ -67,7 +68,7 @@ class ReducerReactorTest {
     @Test
     fun reducer_afterOnStart_isDispatchedToViewDirectly() {
         reactor.setBindableView(view)
-        reactor.onCreate(true)
+        reactor.onCreate(null)
         reactor.onStart()
 
         view.assertNextState(TestState(""))
@@ -83,7 +84,7 @@ class ReducerReactorTest {
     @Test
     fun reducer_afterOnResume_isDispatchedToViewDirectly() {
         reactor.setBindableView(view)
-        reactor.onCreate(true)
+        reactor.onCreate(null)
         reactor.onStart()
 
         view.assertNextState(TestState(""))
@@ -101,7 +102,7 @@ class ReducerReactorTest {
     @Test
     fun reducer_afterOnPause_isDispatchedToViewDirectly() {
         reactor.setBindableView(view)
-        reactor.onCreate(true)
+        reactor.onCreate(null)
         reactor.onStart()
 
         view.assertNextState(TestState(""))
@@ -120,7 +121,7 @@ class ReducerReactorTest {
     @Test
     fun reducer_afterOnStop_isNotDispatched() {
         reactor.setBindableView(view)
-        reactor.onCreate(true)
+        reactor.onCreate(null)
         reactor.onStart()
 
         view.assertNextState(TestState(""))
@@ -142,7 +143,7 @@ class ReducerReactorTest {
     @Test
     fun reducer_afterOnStopWithOnStart_isDispacthedAfterOnStart() {
         reactor.setBindableView(view)
-        reactor.onCreate(true)
+        reactor.onCreate(null)
         reactor.onStart()
 
         view.assertNextState(TestState(""))
@@ -164,7 +165,7 @@ class ReducerReactorTest {
     @Test
     fun reducer_afterOnStopWithRecreate_isDispacthedAfterOnStart() {
         reactor.setBindableView(view)
-        reactor.onCreate(true)
+        reactor.onCreate(null)
         reactor.onStart()
 
         view.assertNextState(TestState(""))
@@ -178,7 +179,7 @@ class ReducerReactorTest {
 
         reactor.onDestroy(false)
         reactor.setBindableView(view)
-        reactor.onCreate(false)
+        reactor.onCreate(NoOpBundleWrapper())
         reactor.onStart()
 
         view.assertLastState(TestState("test"))
@@ -189,7 +190,7 @@ class ReducerReactorTest {
     @Test
     fun reducer_afterOnDestroy_isNotDispatched() {
         reactor.setBindableView(view)
-        reactor.onCreate(true)
+        reactor.onCreate(null)
         reactor.onStart()
 
         view.assertNextState(TestState(""))
@@ -212,7 +213,7 @@ class ReducerReactorTest {
     @Test
     fun reducer_afterOnDestroyWithRecreate_isNotDispatched() {
         reactor.setBindableView(view)
-        reactor.onCreate(true)
+        reactor.onCreate(null)
         reactor.onStart()
 
         view.assertNextState(TestState(""))
@@ -226,7 +227,7 @@ class ReducerReactorTest {
         sendAndTrigger(TestReducer("test"))
 
         reactor.setBindableView(view)
-        reactor.onCreate(false)
+        reactor.onCreate(NoOpBundleWrapper())
         reactor.onStart()
 
         view.assertLastState(TestState("test"))
@@ -237,7 +238,7 @@ class ReducerReactorTest {
     @Test
     fun reducers_afterOnStart_areDispatchedInOrder() {
         reactor.setBindableView(view)
-        reactor.onCreate(true)
+        reactor.onCreate(null)
         reactor.onStart()
 
         view.assertNextState(TestState(""))
@@ -257,7 +258,7 @@ class ReducerReactorTest {
     @Test
     fun reducers_afterOnCreateWithOnStart_isDispatchedOnlyLast() {
         reactor.setBindableView(view)
-        reactor.onCreate(true)
+        reactor.onCreate(null)
 
         sendAndTrigger(TestReducer("test"))
         sendAndTrigger(TestReducer("test2"))

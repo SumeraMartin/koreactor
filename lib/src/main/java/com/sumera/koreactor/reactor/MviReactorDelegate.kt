@@ -7,6 +7,7 @@ import com.sumera.koreactor.internal.util.DetachReactorHelper
 import com.sumera.koreactor.reactor.data.MviAction
 import com.sumera.koreactor.reactor.data.MviEvent
 import com.sumera.koreactor.reactor.data.MviState
+import com.sumera.koreactor.util.bundle.BundleWrapperImpl
 import com.sumera.koreactor.view.MviBindableView
 import com.sumera.koreactor.view.MviBindableViewDelegate
 import io.reactivex.Observable
@@ -38,7 +39,9 @@ class MviReactorDelegate<STATE : MviState> : MviBindableViewDelegate<STATE> {
 
 	fun onCreate(savedInstanceState: Bundle?) {
 		reactor.setBindableView(this)
-		reactor.onCreate(savedInstanceState == null)
+
+		val bundleWrapper = savedInstanceState?.let { BundleWrapperImpl(it) }
+		reactor.onCreate(bundleWrapper)
 	}
 
 	fun onStart() {
@@ -66,7 +69,7 @@ class MviReactorDelegate<STATE : MviState> : MviBindableViewDelegate<STATE> {
 	}
 
 	fun onSaveInstanceState(outState: Bundle) {
-		// TODO add implementation of savedInstanceState to reactor
+		reactor.onSaveInstanceState(BundleWrapperImpl(outState))
 	}
 
 	fun sendAction(action: MviAction<STATE>) {

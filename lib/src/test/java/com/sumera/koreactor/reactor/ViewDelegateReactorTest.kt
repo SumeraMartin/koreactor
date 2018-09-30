@@ -45,7 +45,7 @@ class ViewDelegateReactorTest {
         view.assertUnbindFromEventsCallsCount(0)
         view.assertUnbindActionsCallsCount(0)
 
-        reactor.onCreate(true)
+        reactor.onCreate(null)
 
         view.assertBindToStateCallsCount(0)
         view.assertBindToEventCallsCount(1)
@@ -110,7 +110,7 @@ class ViewDelegateReactorTest {
         view.assertUnbindFromEventsCallsCount(0)
         view.assertUnbindActionsCallsCount(0)
 
-        reactor.onCreate(true)
+        reactor.onCreate(null)
 
         view.assertBindToStateCallsCount(0)
         view.assertBindToEventCallsCount(1)
@@ -191,7 +191,7 @@ class ViewDelegateReactorTest {
         view.assertUnbindFromEventsCallsCount(0)
         view.assertUnbindActionsCallsCount(0)
 
-        reactor.onCreate(true)
+        reactor.onCreate(null)
 
         view.assertBindToStateCallsCount(0)
         view.assertBindToEventCallsCount(1)
@@ -288,7 +288,7 @@ class ViewDelegateReactorTest {
         view.assertUnbindFromEventsCallsCount(0)
         view.assertUnbindActionsCallsCount(0)
 
-        reactor.onCreate(true)
+        reactor.onCreate(null)
 
         view.assertBindToStateCallsCount(0)
         view.assertBindToEventCallsCount(1)
@@ -344,7 +344,7 @@ class ViewDelegateReactorTest {
         view.assertUnbindFromEventsCallsCount(1)
         view.assertUnbindActionsCallsCount(1)
 
-        reactor.onCreate(false)
+        reactor.onCreate(null)
 
         view.assertBindToStateCallsCount(1)
         view.assertBindToEventCallsCount(2)
@@ -409,7 +409,7 @@ class ViewDelegateReactorTest {
         view.assertUnbindFromEventsCallsCount(0)
         view.assertUnbindActionsCallsCount(0)
 
-        reactor.onCreate(true)
+        reactor.onCreate(null)
 
         view.assertBindToStateCallsCount(0)
         view.assertBindToEventCallsCount(1)
