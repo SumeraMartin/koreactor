@@ -30,7 +30,7 @@ class ToDoViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
 		} else if (toDoItemWrapper.isLoading) {
 			state.text = "LOADING"
 		} else {
-			state.text = ""
+			state.text = "CLICK"
 		}
 	}
 }

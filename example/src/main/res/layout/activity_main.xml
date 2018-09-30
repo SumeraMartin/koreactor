@@ -9,7 +9,7 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_gravity="center"
-		android:text="Infinity"/>
+		android:text="Infinity Loading"/>
 
 	<Button
 		android:id="@+id/main_todo"
@@ -23,20 +23,27 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_gravity="center"
-		android:text="COUNTER"/>
+		android:text="Counter"/>
 
 	<Button
 		android:id="@+id/main_simpleLoading"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_gravity="center"
-		android:text="SIMPLE LOADING"/>
+		android:text="Simple loading"/>
 
 	<Button
 		android:id="@+id/main_simpleTimer"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_gravity="center"
-		android:text="SIMPLE TIMER"/>
+		android:text="Simple timer"/>
+
+	<Button
+		android:id="@+id/main_toasts"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center"
+		android:text="Toasts"/>
 
 </LinearLayout>

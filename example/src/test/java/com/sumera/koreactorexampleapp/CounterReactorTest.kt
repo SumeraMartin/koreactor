@@ -23,7 +23,7 @@ class CounterReactorTest {
 
 	@Test
 	@RunAfter(InitialLifecycleState.ON_RESUME)
-	fun decrement() {
+	fun `Decrement action should decrement counter by 1`() {
 		reactorTest.runTest {
 
 			assertNextState { CounterState(counter = 0) }
@@ -43,7 +43,7 @@ class CounterReactorTest {
 
 	@Test
 	@RunAfter(InitialLifecycleState.ON_RESUME)
-	fun increment() {
+	fun `Increment action should increment counter by 1`() {
 		reactorTest.runTest {
 
 			assertNextState(CounterState(counter = 0))
@@ -63,10 +63,26 @@ class CounterReactorTest {
 
 	@Test
 	@RunAfter(InitialLifecycleState.ON_RESUME)
+	fun `Counter should not be changed after process death`() {
+		reactorTest.runTest {
+			sendAction(IncrementAction)
+
+			assertLastState(CounterState(counter = 1))
+
+			fromOnResumeToOnDestroy(isFinishing = true)
+
+			fromUninitializedToOnResume()
+
+			assertLastState(CounterState(counter = 1))
+		}
+	}
+
+	@Test
+	@RunAfter(InitialLifecycleState.ON_RESUME)
 	fun showNumberIsDivisibleByFiveToast_withNumberDivisibleByFive_showToast() {
 		reactorTest.runTest {
 
-			repeat(5, { sendAction(IncrementAction) })
+			repeat(5) { sendAction(IncrementAction) }
 
 			assertNextEvent(ShowNumberIsDivisibleByFiveToast)
 

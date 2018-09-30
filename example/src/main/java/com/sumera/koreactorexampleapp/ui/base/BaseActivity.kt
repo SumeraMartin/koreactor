@@ -15,7 +15,7 @@ abstract class BaseActivity<STATE> : MviActivity<STATE>(), HasSupportFragmentInj
 
 	@Inject lateinit var fragmentInjector: DispatchingAndroidInjector<Fragment>
 
-	abstract protected val layoutRes: Int
+	protected abstract val layoutRes: Int
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		AndroidInjection.inject(this)

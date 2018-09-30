@@ -12,10 +12,12 @@ import com.sumera.koreactor.reactor.data.PauseState
 import com.sumera.koreactor.reactor.data.ResumeState
 import com.sumera.koreactor.reactor.data.StartState
 import com.sumera.koreactor.reactor.data.StopState
+import com.sumera.koreactor.util.bundle.BundleWrapper
+import com.sumera.koreactor.util.bundle.InMemoryBundleWrapper
 import io.reactivex.schedulers.TestScheduler
 
 class ReactorTestWrapper<STATE : MviState>(
-		private val reactor: MviReactor<STATE>,
+		private var reactorFactory: () -> MviReactor<STATE>,
 		private val testView: TestMviBindableDelegate<STATE>,
 		private val testScheduler: TestScheduler
 ) {
@@ -23,35 +25,46 @@ class ReactorTestWrapper<STATE : MviState>(
 	val scheduler: TestScheduler
 		get() = testScheduler
 
+	private val reactor: MviReactor<STATE>
+		get() = reactorUnsafe ?: throw IllegalStateException("Reactor is not initialized")
+
+	private var reactorUnsafe: MviReactor<STATE>? = null
+
+	private var bundleWrapper: BundleWrapper? = null
+
 	private var lastReactorLifecycleState: LifecycleState? = null
 
 	//region From OnCreate lifecycle methods
 
 	fun fromUninitializedToOnCreate() {
+		initializeReactorIfNeeded()
 		checkOnCreateState(isNewlyCreated = true)
 
-		callOnCreate(isNewlyCreated = true)
+		callOnCreate(bundleWrapper)
 	}
 
 	fun fromUninitializedToOnDestroy(isFinishing: Boolean) {
+		initializeReactorIfNeeded()
 		checkOnCreateState(isNewlyCreated = true)
 
-		callOnCreate(isNewlyCreated = true)
+		callOnCreate(bundleWrapper)
 		callOnDestroy(isFinishing)
 	}
 
 	fun fromUninitializedToOnResume() {
+		initializeReactorIfNeeded()
 		checkOnCreateState(isNewlyCreated = true)
 
-		callOnCreate(isNewlyCreated = true)
+		callOnCreate(bundleWrapper)
 		callOnStart()
 		callOnResume()
 	}
 
 	fun fromUninitializedToOnStart() {
+		initializeReactorIfNeeded()
 		checkOnCreateState(isNewlyCreated = true)
 
-		callOnCreate(isNewlyCreated = true)
+		callOnCreate(bundleWrapper)
 		callOnStart()
 	}
 
@@ -142,33 +155,32 @@ class ReactorTestWrapper<STATE : MviState>(
 	fun fromOnDestroyToOnCreate() {
 		checkLifecycleState(DestroyState)
 
-		callOnCreate(false)
+		callOnCreate(bundleWrapper)
 	}
 
 	fun fromOnDestroyToOnStart() {
 		checkLifecycleState(DestroyState)
 
-		callOnCreate(false)
+		callOnCreate(bundleWrapper)
 		callOnStart()
 	}
 
 	fun fromOnDestroyToOnResume() {
 		checkLifecycleState(DestroyState)
 
-		callOnCreate(false)
+		callOnCreate(bundleWrapper)
 		callOnStart()
 		callOnResume()
 	}
-
 	//endregion
 
 	//region Reactor lifecycle calls
 
-	private fun callOnCreate(isNewlyCreated: Boolean) {
+	private fun callOnCreate(bundleWrapper: BundleWrapper? = null) {
 		reactor.setBindableView(testView)
 		testScheduler.triggerActions()
 
-		reactor.onCreate(isNewlyCreated)
+		reactor.onCreate(bundleWrapper)
 		testScheduler.triggerActions()
 
 		lastReactorLifecycleState = CreateState
@@ -203,6 +215,12 @@ class ReactorTestWrapper<STATE : MviState>(
 	}
 
 	private fun callOnDestroy(isFinishing: Boolean = false) {
+		if (isFinishing) {
+			bundleWrapper = InMemoryBundleWrapper().apply {
+				reactor.onSaveInstanceState(this)
+			}
+		}
+
 		reactor.onDestroy(isFinishing)
 		testScheduler.triggerActions()
 
@@ -361,6 +379,12 @@ class ReactorTestWrapper<STATE : MviState>(
 	//endregion
 
 	//region Helper methods
+	private fun initializeReactorIfNeeded() {
+		if (lastReactorLifecycleState == DetachState || lastReactorLifecycleState == null) {
+			reactorUnsafe = reactorFactory()
+			lastReactorLifecycleState = null
+		}
+	}
 
 	private fun checkOnCreateState(isNewlyCreated: Boolean) {
 		if (isNewlyCreated && lastReactorLifecycleState != null) {

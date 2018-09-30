@@ -36,7 +36,7 @@ class TimerFragment: BaseFragment<TimerState>() {
         stateObservable
                 .getChange { it.timerValue }
                 .observeState {
-                    timer_countText.text = "" + it
+                    timer_countText.text = it.toString()
                 }
     }
 }
