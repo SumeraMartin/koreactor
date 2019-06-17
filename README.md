@@ -1,6 +1,6 @@
 ## Koreactor
 
-Koreactor is an Android library for building reactive apps. It is based on RxJava2 and created specifically for Kotlin. Example of usage can be seen in the example directory.
+Koreactor is an Android library for building reactive apps based on MVI architecture. It uses RxJava2 and is created specifically for Kotlin. Example of usage can be seen in the example directory.
 
 Although it is not fully finished, it is ready to use:
 
