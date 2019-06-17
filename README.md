@@ -10,7 +10,7 @@ dependencies {
 }
 ```
 
-### All it need to be finished:
+### TODO:
 
 - [ ] Add an example with complex use case
 - [ ] Add better test coverage
