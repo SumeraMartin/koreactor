@@ -50,10 +50,10 @@ abstract class MviFragment<STATE : MviState> : Fragment(), MviBindableView<STATE
 		reactorDelegate.onStop()
 	}
 
-	override fun onDestroy() {
+	override fun onDestroyView() {
 		reactorDelegate.onDestroy(this)
 
-		super.onDestroy()
+		super.onDestroyView()
 	}
 
 	override fun onSaveInstanceState(outState: Bundle) {
